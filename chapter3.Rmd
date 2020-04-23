@@ -1,0 +1,238 @@
+---
+title: "chapter3"
+author: "Ezgi Karaesmen"
+date: "`r Sys.time()`"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r ch3_setup, include=FALSE}
+## This saves you from having to do this for every chunk
+knitr::opts_chunk$set(fig.path = 'figures/chapter3/',
+                      echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE,
+                      cache=FALSE,
+                      eval=TRUE)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+In accordance with Blood Advances journal [copyright aggreement](https://ashpublications.org/bloodadvances/pages/copyright) and permission obtained from all contributed authors, manuscript \textbf{Multiple functional variants in the IL1RL1 region are pretransplant markers for risk of GVHD and infection deaths.} (Blood Adv. 2019;3(16):2512–2524. doi:10.1182/bloodadvances.2019000075) has been reused and included as Chapter 3 herein. Supplemental information and figures [(click to download PDF)](https://ash.silverchair-cdn.com/ash/content_public/journal/bloodadvances/3/16/10.1182_bloodadvances.2019000075/2/baadv2019000075-suppl1.pdf?Expires=1584508727&Signature=m1tcI6lE5RKKLGzHuHPwpC7ccTIUw~mSBRkmvjRQtUcL4480NHNC4HatM5T4J3YuWdw9tAJjMs368ho1Let0TzSWm9aotwVjAQIgfb9C2OKAMhcxJVfDjAkLIIHND4Ci95WEeOcibuaaBmXUjiMvIVWTaqAW3G8rYiM4hNSLhQodmN1mY5I5tE8hvO9Sb-q~8P~8xbkJhBcW1EAGp4aE1c8bATv4ictMxFpoHZjCvkbXeQgt1QgdtuMTLTFlSjQiTgjxsCOEkLFxbgnVDTjnGuMWlsaIFI7-J4OafHI3pB~D0-G3suxQEvH9Tvgyf6yemQV3ssFXckX-K7k0h1Ls-g__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA) and Supplemental tables [(click to download XLSX)](https://ash.silverchair-cdn.com/ash/content_public/journal/bloodadvances/3/16/10.1182_bloodadvances.2019000075/2/baadv2019000075-suppl2.xlsx?Expires=1584508727&Signature=snhml~WkYF8E4siRpVOwJdgZaZbzwiG4q1TclXdAq4UA9ZtJ8bdAIo~dYiMOYdkWd0mLcLdaUP3tiH4IUR4v-cjkBHevTnLaO2jQtzgZQFZUUeXeaScR5JumqIwwer80VV36AwxZ~5JNMf9KYQDtPtmdJyPO79xEAPhWuuvwKYAFQP7XjiBJZYeIrAT~AZ8KCoSk-guiGh2IOwXVqMfsHQq9AJ5ZvJpE7y-UTtMdmtCnZXBUPcTQPk2ovkXmnp3i-mlCK5HOj4WDzLrrXbqKUgyM1-u57xb78W-~MqL5KqKZQ-qfq~GOkEbNsudKN9uyCTieJwjN-4d9tCvjCpsxWw__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA) referenced in the text is available with the online version of the publication and can be downloaded by clicking on the hyperlinks.
+
+# Introduction
+
+Approximately 30,000 allogeneic hematopoietic stem cell transplantations (HSCT) will be performed worldwide in 2018. Graft-versus-host disease (GVHD) and infections are the two main causes of non-relapse morality following HSCT. Elevated soluble serum STimulation-2 (sST2) levels in post-transplant patients is a validated biomarker of therapy-resistant GVHD and death.[@zaid2017; @RN8; @RN9; @RN5; @McDonald2015; @ponce2015; @RN286; @RN6] The ST2 protein is encoded by the *IL1RL1* gene, which is located on chromosome 2 (2q12) and produces two isoforms: soluble or circulating (sST2) and membrane-bound or cellular (ST2) forms.[@RN303] The membrane-bound isoform (ST2) induces immune response through its only ligand, Interleukin-33 (IL-33), and promotes MyD88/NF-$\kappa$B signaling, while the soluble isoform (sST2) lacks trans-membrane and cytoplasmic domains, does not signal and acts as a decoy receptor, sequestering free IL-33 in serum. [@st2bcgd; @RN303] ST2 is a member of the interleukin 1 receptor family and ST2/IL-33 pathway has been implicated in several immune and inflammatory diseases as well as cardiovascular events. [@st2bcgd; @RN303]
+
+In five independent genome-wide association study (GWAS) totaling tens of thousands of healthy individuals, multiple single nucleotide polymorphisms (SNPs) within 1 Mb region around *IL1RL1* (chr 2:102.5-103.5 Mb) associated with sST2 protein levels at the genome-wide significant level (P<5 x 10-8).[@RN7; @RN287; @RN4; @RN3; @RN295; @RN1]  There are additional genomic features that make this an appealing region to search for biomarkers of aGVHD and infection death. Specifically variants in this 1 Mb span significantly correlate with gene expression levels of *IL1RL1* and other IL1 family members in healthy blood, lung, skin and esophageal tissues.[@RN110; @RN10; @RN295; @RN224] Analyses of human primary blood cell types promoter capture Hi-C (PHi-C) data, which attempts to link gene regulatory elements to their target genes, show this region contains over a thousand promoter-interaction regions (PIRs). [@RN131; @RN144; @RN140] PIRs in lymphoblastoid cell lines are significantly enriched for autoimmune GWAS SNPs ;[@RN142; @RN133] in line with this finding, the 1 Mb region surrounding *IL1RL1* contains over 70 unique genome-wide significant SNPs associated with multiple infection or immune-related phenotypes, asthma, Crohn’s disease, ulcerative colitis (UC), celiac disease, ankylosing spondylitis[@RN160; @RN292; @RN3; @RN105], inflammatory bowel disease (IBD), percentages of neutrophils, and percentage and counts of eosinophils and lymphocytes.[@RN100] Together these data provide a strong rationale for testing the association of SNPs in this region with recipient survival post-HSCT. 
+We sought to determine if variants in the *IL1RL1* region associate with sST2 levels in DISCOVeRY-BMT recipients and donors and in turn if these sST2 associated variants increase the risk of death from aGVHD, infectious death and transplant related mortality. Evidence of a genetic association suggests these may be functional survival biomarkers and could be used to improve donor selection and/or better understand the biological complexity of death due to aGVHD or infection. 
+
+# Methods
+
+## Study population
+The study population consisted of the two cohorts comprising “Determining the Influence of Susceptibility COnveying Variants Related to one-Year mortality after BMT”, (DISCOVeRY-BMT), an existing well-powered genome-wide association study (GWAS). totaling 3,047 HSCT recipients of European genomic ancestry with ALL, AML, or MDS and their HLA-matched unrelated donors, treated from 2000-2011 and reported to the Center for International Blood and Marrow Transplant Research (CIBMTR).[@RN211; @RN195; @RN212; @RN91] All patients included in DISCOVeRY-BMT provided informed consent for inclusion in the CIBMTR registry and biorepository. Paired donor and recipient biospecimens and corresponding clinical data were obtained from the CIBMTR biorepository and database. The National Marrow Donor Program (NMDP), Roswell Park Comprehensive Cancer Institute, the Ohio State University, and Indiana University School of Medicine Institutional Review Boards approved the study protocol. Here, we focus on AML and MDS patients and their donors (n=2253 pairs) in DISCOVeRY-BMT. We define aGVHD death and infection death as primary non-overlapping causes of death in the absence of disease relapse, with secondary causes defined as contributing, because these were either not as severe as the primary cause or were more distal from the time of death.[@RN195] 
+
+## Genotyping and imputation
+Genotyping and quality control has previously been described in detail.[@RN211; @RN195; @RN212; @RN91] Briefly, samples were randomized to plates[@RN203] and genotyped using the Illumina Human OmniExpress BeadChip (University of Southern California Genomics Facility). After sample quality control 2111 (cohort 1) and 777 (cohort 2)  donor-recipient pairs of European genomic ancestry were available for analyses. Following SNP QC, ~635,000 SNPs were imputed to the hg19 build 37 Haplotype Reference Consortium, (http://www.haplotype-reference-consortium.org/home). In order to make the population more homogenous we included only myeloid samples (AML and MDS) from DISCOVeRY-BMT.  Variants were analyzed if the MAF>.05 and info score >.8, yielding 2,271 SNPs on Chromosome 2  (102.5-103.5 Mb) in 1584 (cohort 1)  and 669 (cohort 2) donor-recipient pairs.
+
+
+## Pre-HSCT sST2 plasma and serum concentration measurements
+A subset of DISCOVeRY-BMT AML and MDS samples with available plasma or serum were selected for pre-HSCT sST2 measurement. In total we measured sST2 levels on 1514 samples, 757 pre-transplant patients and their matched donors. Samples were collected prior to initiation of the preparative regimen for transplantation.  This collection may have occurred prior to or on the day of admission. Enzyme-linked immunosorbent assays (ELISAs) for ST2 were performed in batches on cryopreserved plasma and serum[@RN7; @RN8; @RN9; @RN3]. Approximately ¾ of all samples measured were from Plasma (ACD) and the remaining ¼ were measured in serum.
+
+
+## Statistical Analyses
+
+### SNP associations with pre-HSCT sST2 levels 
+
+SNPs were tested for association with plasma/serum sST2 concentrations using linear regression models adjusted for age, sex and sample type (plasma or serum) in a subset of DISCOVeRY-BMT donor-recipient pairs (n=757). sST2 values were log10-transformed for normalization. Donor and recipient SNPs were tested for association with donor and pre-transplant recipient sST2 serum/plasma concentrations respectively. Dosage SNP data (ranging from 0-2 alleles),  accounting for the probability of each genotype, were used in all regression models run using R statistical software.[@RN148] Linkage disequilibrium (LD) between the SNPs and SNP annotation were visualized using the R package LDheatmap and SNIPA online tool, respectively.[@RN148, 132]
+
+### Competing risk analyses of aGVHD death and infection death
+
+Prior to genetic analyses, bidirectional stepwise competing risk models were constructed for both outcomes and run using R package crrstep.[@RN148; @RN141; @RN304] Aikake Information Criteria (AIC) was used to select the best fit clinical model in cohort 1. These variables were used for competing risk SNP analyses in both cohorts 1 and 2. The following variables were tested: recipient age <40, donor age, recipient sex, donor sex, ATG/Campath prophylaxis, body mass index (BMI) categories, ABO blood group, conditioning intensity, graft source, total body irradiation (TBI), AML (yes/no), disease stage and CMV status. SNP meta-analyses were performed by fitting fixed effects models with inverse variance weighting  using the R package Metafor. Random effects models were used to provide meta-analyses estimates if heterogeneity was detected between cohorts, defined as Cochran’s Q value >50 or P <.05.[@RN159] Bonferroni correction for the effective number of independent genetic tests after adjusting for the correlation between tested SNPs was used to determine significance.[@RN116] A SNP association was deemed statically significant if the direction of hazard was same in both cohorts and had a $P_{meta} < 5.3\times10^{-4}$. These significant SNPs were then also tested for association with overall survival (OS) using Cox-proportional hazard models and transplant related mortality (TRM) using competing risk models, while adjusting for other clinical variables. To measure the collective contribution of significant variants to risk of death due to infection, a multi-allele variable was generated, defined as the sum of the number of risk alleles across significantly associated SNPs selected in the models described above. This variable was then used in the final competing risk model with clinical covariates. 
+
+### Annotation of Significantly Associated Variants
+
+We annotated significant SNPs in *IL1RL1* region (Chromosome 2  102.5-103.5 Mb) using publicly available data to better understand the potential function of the variants identified. eQTLGen, a consortium analyses of the relationship of SNPs to gene expression in 30,912 whole blood samples, was used to determine if aGVHD or infection death associated SNPs showed an allele specific association with a nearby gene expression (cis-eQTL). A catalogue of human blood cell trait variation[@RN100] and the genomic atlas of human plasma proteome[@RN295] was used to determine if significant SNPs showed an allele specific association with plasma protein levels in >3,000 healthy individuals. Significant variants were also examined for relationship to gene expression in >70 additional tissues using Genotype-Tissue Expression project (GTEx).  To determine if our significant SNPs associated with other traits or diseases we queried PhenoScanner database, a variant-phenotype comprehensive database of large GWAS, which includes results from the UK Biobank, NHGRI-EBI GWAS catalogue, NIH GRASP and publicly available summary statistics from more than 100 published genome association studies.[@RN10] Results were filtered at P < 5 x 10-8 and the R statistical software package phenoscanner (https://github.com/phenoscanner/phenoscanner) was used to download all data for our significant variants. Chromatin state data based on 25-state Imputation Based Chromatin State Model across 24 Blood, T-cell, HSC and B-cell lines was downloaded from the Roadmap Epigenomics project [@RN34] 40 website (https://egg2.wustl.edu/roadmap/data/byFileType/chromhmmSegmentations/ChmmModels/imputed12marks/jointModel/final/). Figures including chromatin state information and results from previous GWAS was constructed using the R Bioconductor package gviz.[@RN11]  Lastly publicly available Promoter Capture Hi-C (PCHi-C) data on a lymphoblastoid cell line (LCL), GM12878, were used to identify PIRs within our 1 Mb region.[@RN144; @RN143] Briefly PCHi-C, uses Hi-C libraries with biotinylated RNA baits complementary to the ends of all promoter-containing restriction fragments to enrich for promoter sequences. The promoters and the genome pieces with which promoter fragments interact are captured and sequenced.  These paired pieces are then tested for statistical significance to identify PIRs. [@RN142; @RN140] PIRs are important as variation in these regions can be connected to potential gene targets and may thus impact gene function.[@RN133] To determine if significant variants were in PIRs, SNP positions for associated variants were super-imposed on a map of significant bait-target pairs in GM12878 cell line.[@RN144; @RN143]
+
+# Results
+
+## Patient and Donor Characteristics
+
+Patient and donor characteristics are shown in Table \ref{tab:st2tab1}. AML and MDS proportions and donor age and graft source differed between cohorts (P<.001).  The study design is shown in Figure \ref{fig:st2fig1}.
+
+\begin{table}[]
+\centering
+\caption[Patient Characteristics of the study]{Patient Characteristics of the study.      
+$*$ denotes significant difference between cohorts 1 and 2 at $P<.001$}
+\label{tab:st2tab1}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+\thead{Category} & \thead{Patient Characteristics} & \thead{Cohort 1 N=1584 (\%)} & \thead{Cohort 2 N=669 (\%)} & \thead{Cohort with sST2 level\\measurements N=756 (\%)} \\ \midrule
+Recipient Age, years & \textgreater{}=40 & 1132 (71) & 481 (72) & 532 (70) \\
+ & \textless{}40 & 452 (29) & 188 (28) & 224 (30) \\ \midrule
+Donor Age, years* & \textgreater{}=30 & 963 (61) & 347 (52) & 392 (52) \\
+ & \textless{}30 & 621 (39) & 322 (48) & 364 (48) \\ \midrule
+Recipient Sex & Female & 723 (46) & 303 (45) & 340 (45) \\
+ & Male & 861 (54) & 366 (55) & 416 (55) \\ \midrule
+Donor Sex & Female & 498 (31) & 181 (27) & 198 (26) \\
+ & Male & 1086 (69) & 488 (73) & 558 (74) \\ \midrule
+Blood Type Mismatch Between & No & 674 (43) & 293 (44) & 332 (44) \\
+Donor-Recipient & Yes & 910 (57) & 376 (56) & 424 (56) \\ \midrule
+ATG/Campath prophylaxsis* & No & 1074 (68) & 396 (59) & 477 (63) \\
+ & Yes & 407 (26) & 273 (41) & 277 (37) \\
+ & Missing & 103 (7) & 0 (0) & 2 (0.3) \\ \midrule
+Obese BMI & No & 1084 (68) & 446 (67) & 500 (66) \\
+ & Yes & 500 (32) & 223 (33) & 256 (34) \\ \midrule
+Overweight BMI & No & 1079 (68) & 444 (66) & 508 (67) \\
+ & Yes & 505 (32) & 225 (34) & 248 (33) \\ \midrule
+Graft Type* & Bone Marrow & 505 (32) & 161 (24) & 260 (34) \\
+ & Peripheral blood & 1079 (68) & 508 (76) & 496 (66) \\ \midrule
+Conditioning Intensity & Myeloablative & 1079 (68) & 453 (68) & 549 (73) \\
+ & Reduced Intensity & 505 (32) & 216 (32) & 207 (27) \\ \midrule
+Total Body Irradiation & No & 1021 (64) & 472 (71) & 489 (65) \\
+ & Yes & 563 (36) & 197 (29) & 267 (35) \\ \midrule
+Disease Status at Diagnosis & Early & 1107 (70) & 428 (64) & 486 (64) \\
+ & Advanced & 477 (30) & 241 (36) & 270 (36) \\ \midrule
+Recipient CMV Status & Negative & 716 (45) & 306 (46) & 361 (48) \\
+ & Positive & 868 (55) & 363 (54) & 395 (52) \\ \midrule
+Donor CMV Status & Negative & 1080 (68) & 472 (71) & 513 (68) \\
+ & Positive & 504 (32) & 197 (29) & 243 (32) \\ \midrule
+Diagnosed with AML* & No & 337 (21) & 192 (29) & 208 (28) \\
+ & Yes & 1247 (79) & 477 (71) & 548 (72) \\ \midrule
+Diagnosed with MDS & No & 1247 (79) & 477 (71) & 548 (72) \\
+ & Yes & 337 (21) & 192 (29) & 208 (28) \\ \midrule
+Primary cause of death & aGvHD & 95 (0.06) & 56 (0.08) & 49 (0.06) \\
+ & Infection & 86 (0.05) & 25 (0.04) & 36 (0.05) \\ \bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{figures/chapter3/fig1.png}
+  \caption[Study schema showing analytic workflow]{Study schema showing analytic workflow.
+  The flow diagram shows the selection process for both the samples (N) and SNPs (M) for analyses of aGVHD and infection death in (DISCOVeRY\-BMT).}
+  \label{fig:st2fig1}
+\end{figure}
+
+
+## SNP – sST2 plasma and serum concentration associations
+
+We tested associations of donor SNPs selected from the 1 Mb region around *IL1RL1* with donor sST2 concentrations. In total, 1265 donor SNPs associated at  P<.05 with donor sST2 serum/plasma concentrations, represented by 93 independent variants ($r^2$=.60 and MAF=.05) (Figure \ref{fig:st2fig1} and Figure \ref{fig:st2fig2}). Recipient SNP association with sST2 serum/plasma concentrations showed 664 SNPs at P<.05, represented by 11 independent variants (Supplemental Table \ref{tab:st2tab1}). All donor and recipient SNPs that associated with sST2 levels at P<.05 replicated in same direction of effect as seen in the genomic atlas of human plasma proteome.[@RN295] Effect sizes of recipient SNP associations with sST2 levels were smaller with larger standard errors than donor SNP sST2-associations. These 1265 donor SNPs were then tested for associations with recipient death due to aGVHD and infection using competing risk models (Figure \ref{fig:st2fig1}).   
+
+\begin{figure}
+  \centering
+  \captionsetup{font=small}
+  \includegraphics[width=0.95\linewidth]{figures/chapter3/fig2.png}
+  \caption[Regional association plot showing donor SNP associations with sST2 concentrations]{Regional association plot showing donor SNP associations with sST2 concentrations in plasma and serum and linkage disequilibrium structure (LD) of the *IL1RL1* region
+(A) Genomic positions of SNPs are shown in mega-bases (Mb) on x-axis with mapped genes labelled by their HGNC symbols. $-log_{10}$ p-values obtained from linear regression models of donor SNPs on log\-transformed sST2 concentrations in serum and plasma are shown in the left y-axis. The shape of the point indicates the regulatory effect of the SNP; line color of the shape denotes associations from previous studies, where blue and green show genome-wide association with a trait and multiple effects, respectively. This shows that a majority of the associated SNPs have a direct regulatory effect on a transcript, indicating that region contains multiple expression-quantitative trait loci (eQTL). Fill color for each SNP indicates the $r^2$ with sentinel SNP, rs950880 (most significant SNP-sST2 association), shown in a yellow-red gradient, with yellow indicating low LD ($r^2$<0.2) and red in high LD ($r^2$>0.8). Blue line coupled with the right y-axis shows the recombination rate in centi-Morgan (cM) per mega-base (Mb). (B) Pairwise-LD heatmap of the region showing pair-wise $r^2$ between SNPs. Brighter red indicates stronger correlation between SNP pairs.}
+\label{fig:st2fig2}
+\end{figure}
+
+## SNP associations with death due to aGVHD
+
+There were 95 aGVHD primary cause deaths in cohort 1 and 56 in cohort 2, respectively (Table \ref{tab:st2tab1}).[@RN195] Multivariate aGVHD competing risk models constructed using AIC included AML diagnosis, recipient obesity (>30 mg/kg2), peripheral blood cell source and donor age; no other variables were selected for inclusion in the model (Supplemental Table 2).
+
+Meta-analysis of competing risk analysis results from Cohort 1 and 2 for all 1265 donor sST2 associated SNPs with aGVHD death are shown in Supplemental Table 3. Correction for 93 independent variants yields a significant $P<5.4 \times 10^{-4}$; all variants with P less than this value were considered significant. We identified 11 aGVHD death-associated SNPs (\ref{fig:st2fig3}A). Stepwise competing risk analyses identified rs2310241 and rs2241131 (Table 2). The risk alleles at rs2310241 (A) and rs2241131 (C) correlated with higher levels of sST2, $P=1.3\times10^{-4}$ and $P=5.0\times10^{-5}$ and increased hazard of aGVHD death  (HR=1.5, $P_{meta}=3.3\times10^{-4}$) and (HR=1.7, $P_{meta}=2.6\times10^{-4}$), respectively, for each additional donor risk allele (Supplemental Table 3). There was no evidence of heterogeneity of effect between cohorts. To assess the robustness of the association we excluded patients with infection as a secondary cause of death (~38% of all aGVHD primary deaths); the results remained consistent after excluding these patients (\ref{fig:st2fig3}A). SNPs are modestly correlated, $r^2$=.52, and the AIC including both variants is approximately equivalent to the single SNP models, thus no additional information is gained from including both SNPs in a multi-allele model. Cumulative incidence curves for rs2310241 and rs2241131 are shown in Figure \ref{fig:st2fig4}. None of the significant aGVHD SNPs associated with competing risk models of TRM or Cox proportional hazard models of OS. 
+No recipient SNPs were associated with aGVHD death. Rs3917290, the most significant recipient SNP associated with aGVHD death, in cohorts 1 ($P=.015$) and 2 ($P=0.17$), did not associate with sST2 at $P<0.05$.
+
+\begin{sidewaystable}
+  \centering
+  \captionsetup{font=small}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{ccccc|cc|cc|cc}
+ &  &  &  &  & \multicolumn{2}{c}{Cohort 1 (N=1584)} & \multicolumn{2}{c}{Cohort 2 (N=669)} & \multicolumn{2}{c}{Meta Analyses} \\ \hline
+\thead{Primary\\Cause of Death} & \thead{SNP} & \thead{SNP Position\\on Chr 2 (hg19)} & \thead{Allele\\(Ref/Risk)} & \thead{Risk Allele\\Frequency (C1/C2)} & \thead{HR (95\% CI)} & \thead{P-value} & \thead{HR (95\% CI)} & \thead{P-value} & \thead{HR (95\% CI)} & \thead{P-value} \\ \hline
+\multirow{2}{*}{GvHD} & rs2241131* & 102804041 & A/C & 0.69/0.72 & 1.46 (1.05-2.02) & $0.024$ & 2.71 (1.53-4.82) & $6.7\times10^{-4}$ & 1.69 (1.28-2.25) & $2.6\times10^{-4}$ \\
+ & rs2310241* & 102841949 & C/A & 0.51/0.54 & 1.37 (1.01-1.84) & $0.04$ & 1.81 (1.25-2.62) & $1.6\times10^{-3}$ & 1.53 (1.21-1.92) & $3.3\times10^{-4}$ \\ \hline
+ & rs11676124* & 102941338 & T/C & 0.62/0.61 & 1.7 (1.2-2.4) & $3\times10^{-3}$ & 2.39 (1.15-4.99) & $0.02$ & 1.81 (1.32-2.47) & $2.2\times10^{-4}$ \\
+ & rs11692304 & 103095404 & G/A & 0.47/0.48 & 1.61 (1.19-2.16) & $2\times10^{-3}$ & 1.95 (1.03-3.7) & $0.041$ & 1.66 (1.27-2.18) & $2.2\times10^{-4}$ \\
+ & rs13015714 & 102971865 & G/T & 0.77/0.76 & 1.79 (1.17-2.73) & $8\times10^{-3}$ & 2.92 (1.22-6.97) & $0.016$ & 1.96 (1.34-2.88) & $5.3\times10^{-4}$ \\
+Infection & rs72627435* & 102897739 & T/C & 0.21/0.20 & 1.76 (1.29-2.4) & $3.8\times10^{-4}$ & 2.01 (1.09-3.69) & $0.024$ & 1.81 (1.37-2.38) & $2.8\times10^{-5}$ \\
+ & rs4851005 & 103011552 & C/T & 0.37/0.34 & 1.85 (1.38-2.47) & $3.3\times10^{-5}$ & 2.17 (1.15-4.09) & $0.017$ & 1.9 (1.46-2.47) & $1.9\times10^{-6}$ \\
+ & rs13019803 & 102776202 & C/T & 0.08/0.08 & 2.31 (1.51-3.53) & $1.1\times10^{-4}$ & 2.53 (1.11-5.77) & $0.028$ & 2.35 (1.61-3.43) & $8.9\times10^{-6}$ \\
+ & rs4851601* & 103116261 & G/A & 0.28/0.26 & 2.01 (1.48-2.73) & $8.3\times10^{-6}$ & 1.92 (1.03-3.6) & $0.042$ & 1.99 (1.51-2.62) & $9.7\times10^{-7}$ \\
+ & MULTI-ALLELE & --- & GCG/TTA &  & 1.94 (1.54-2.44) & $1.8\times10^{-8}$ & 2.24 (1.36-3.69) & $0.002$ & 1.99 (1.61-2.45) & $1.2\times10^{-10}$ \\ \hline
+\end{tabular}%
+}
+\caption[Independent significant SNP associations with GVHD death and infection deaths]{Independent significant SNP associations with GVHD death and infection deaths.\\
+*SNP is imputed.\\
+SNP associations with GvHD death are adjusted for AML diagnosis, recipient obesity (>30 mg/kg2), donor age and peripheral blood cell source.  SNP associations with infection death are adjusted for recipient age, advanced disease at HCT, and recipient and donor and CMV status. For infection, we computed a multi-allele model which includes the clinical covariates plus a variable collapsing the bolded SNPs such that recipients have between 0-6 donor risk alleles. For GvHD, SNPs showed some LD ($r^2$=.52) and were thus better markers alone than collectively.\\ 
+Abbreviations: hg19, position according to human reference genome version hg19; Ref, reference allele; Risk, risk allele; C1, cohort 1; C2, cohort 2; HR, competing risk hazard ratio; 95% CI, 95% confidence interval; N, sample size.
+}
+\label{tab:st2tab2}
+\end{sidewaystable}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{figures/chapter3/fig3.png}
+  \caption[Significant sST2-donor SNP association beta values and hazard ratios for aGVHD death and infection death]{Significant sST2-donor SNP association beta values and hazard ratios for aGVHD death and infection death.\\
+  Plots show the relationship of donor SNPs with sST2 levels in donors and death from (A) aGVHD death and (B) infection. SNPs are shown in the y-axis with rsIDs and the effect allele, ordered by chromosome position. The point colors indicate the p-values of the SNP for each analysis. Only SNPs that pass multiple test correction are included. (A) The far-left panel shows the coefficient beta values with confidence intervals of donor SNP associations with sST2 plasma/serum levels. The middle panel shows subdistribution hazard ratios and confidence intervals from competing risk models with aGVHD death as primary cause. The far-right panel shows results from competing risk models of aGVHD death as the primary cause without infection. (B) The left panel shows the coefficient beta values with confidence intervals of donor SNP associations with sST2 plasma/serum levels. The middle panel shows panel show subdistribution hazard ratios and confidence intervals of competing risk models with death due to infection. The far-right panel shows results from competing risk models with death due to infection among patients who did not experience aGvHD III-IV.}
+  \label{fig:st2fig3}
+\end{figure}
+
+     
+## sST2 SNP associations with death due to infection
+
+There were 86 and 25 deaths in which infection is the primary cause in cohort 1 and cohort 2, respectively (Table \ref{tab:st2tab1}).[@RN195] In 92% of cases, infection deaths were confirmed by a culture or biopsy of the organism and almost 1/3 of these patients had autopsy records available for review, confirming infection as the cause of death.[@RN195] Causes of infection death and affected organs are shown in Supplemental Figure 1A and 1B.  Multivariate clinical models of infection death constructed using AIC included recipient age, advanced disease at HSCT, donor +/recipient - CMV status, peripheral blood cell source (Supplemental Table 2). Results of infection death competing risk models including clinical variables and each of the 1265 donor SNPs are shown in Supplemental Table 4. Upon multiple test correction, eight independent SNPs associated with infection death (Table 2). There was no evidence of heterogeneity of effect between cohorts and thus random effects models were not used.
+
+The final model included recipient age, advanced disease at HSCT, donor +/recipient - CMV status, peripheral blood cell source rs4851601 ($P_{meta}=9.7\times10^{-7}$), rs13019803 ($P_{meta}=8.9\times10^{-6}$) and rs13015714 ($P_{meta}=5.3\times10^{-4}$) with risk alleles at each SNP increasing risk of infection-death approximately two-fold. Figure \ref{fig:st2fig3}B shows the associated donor alleles at each SNP associated with lower donor sST2 levels at rs4851601 ($P=.01$), rs13019803 ($P=1.6\times10^{-5}$) and rs13015714 ($1.2\times10^{-20}$).  To assess the robustness of the infection risk variants association we excluded patients with aGVHD III-IV (29% of all infection primary deaths); the results remained consistent after excluding these patients (Figure \ref{fig:st2fig3}B).
+
+The multi-allele model with rs4851601, rs13019803 and rs13015714 showed an increased risk of infection death of approximately 2 and 2.25 fold in cohorts 1 ($P=1.8\times10^{-8}$) and 2 ($P=.002$), respectively (Table 2 and Figure \ref{fig:st2fig5}).  The risk allele, T, in rs13019803 translates to an increased risk of TRM ($HR_{meta}=1.51$, 95% CI~meta~ 1.21-1.88, $P_{meta}=2.1\times10^{-4}$), but not OS. The other infection risk variants did not associate with TRM or OS. 
+
+No recipient SNPs were associated with death due to infection after correction for multiple testing. rs1922296, the most significant recipient SNP associated with infection death in cohorts 1 ($P=.05$) and 2 ($P=.48$), did not associate with sST2 at $P<.05$.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{figures/chapter3/fig4.png}
+  \caption[Cumulative Incidence functions of aGVHD death by donor SNPs]{Cumulative Incidence functions of aGVHD death by donor SNPs.\\
+  (A) The cumulative incidence of aGVHD death in the first year after HSCT by rs2241131 genotype (left) and (B) by rs2310241 genotypes (right).}
+  \label{fig:st2fig4}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{figures/chapter3/fig5.png}
+  \caption[Cumulative Incidence functions of infection death by donor SNPs]{Cumulative Incidence functions of infection death by donor SNPs.\\
+  The cumulative incidence of GVHD death in the first year after HSCT by (A) rs13019803, (B) rs13015714, (C) rs4851601 and (D) multi allele model, respectively. Multi allele model is the allele dosage sum of all three infections SNPs (rs13015714, rs4851601, rs13019803) and was categorized for the number of total risk alleles, 0, 1-3 and 4-6 alleles respectively.}
+  \label{fig:st2fig5}
+\end{figure}
+
+## Annotation of Significantly Associated Variants
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{figures/chapter3/fig6.png}
+  \caption[Figure 6. *IL1RL1* region with associated SNP p-values annotated with previous GWAS and Roadmap Epigenome Chromatin States]{Cumulative Incidence functions of infection death by donor SNPs.\\
+  A) GWAS SNPs in the *IL1RL1* region SNPs are classified by broad phenotypes indicated by the colored circles; all variants are associated at P<5 x 10-8. (B) Shows SNPs associations in the *IL1RL1* region with infection death and aGvHD death at P<.05 in Cohort 1 and replicated in cohort 2. All variants above the multiple test correction line, shown in red, are considered significant. The x-axis is the chromosome position in mega base (Mb) pairs and y-axis shows the –log10(p-values) for aGVHD and infection death. The higher the -log10 number, the lower the p-value. The SNPs selected using step-AIC for multi-allele models, for death from aGvHD (rs2241131 and rs2310241), and infection (rs4851601, rs13019803 and rs13015714) are highlighted with dashed lines drawn through the point to show the relationship of the variant to GWAS hits and epigenome road map data. (C) Genes in the region were mapped from UCSC build hg19 based on the knownGene Track and annotated with chromatin states from Roadmap Epigenome project for all blood, T-cell, HSC and B-cells; the cell line numbers shown down the left side correspond to specific Roadmap Epigenome cell line identifier (E ID), described in Supplemental Table 8. The colors indicate ChromHmm status which is shown in the key.}
+  \label{fig:st2fig6}
+\end{figure}
+
+
+### Annotation of donor SNPs associated with death due to aGVHD
+
+Data from the genomic atlas of human plasma proteome [@RN295], corroborate the associations we identified between higher *IL1RL1* protein plasma levels and aGVHD death risk alleles at rs2310241 and rs2241131. Although we did not measure IL1R2 protein levels in DISCOVeRY-BMT, the genomic atlas of human plasma proteome [@RN295] show these risk alleles also correlate with increased IL1R2 plasma protein levels ($P<5\times10_{-6}$).[@RN295] Multiple databases show the risk allele at rs2310241 is correlated with higher IL18R1 expression in whole blood (P=1 x 10-54) and both risk alleles at rs2310241 and rs2241131 significantly associated ($P<5\times10^{-8}$) with increased *IL18RAP* expression in whole blood [@RN130; @RN181; @RN224; @RN135; @RN180]. Data extracted from the Phenoscanner database showed that the associated SNPs are adjacent to multiple GWAS SNPs (Figure \ref{fig:st2fig6}A and B). In hematopoietic stem cells (HSC), B-cells and T-cells from the Epigenome Road Map dataset (Supplemental Table 7), rs2310241 is located in or directly adjacent to (<900 base pairs) active enhancer regions and rs2241131 resides in an upstream promoter region (Figure \ref{fig:st2fig6}C and D). Furthermore, publicly available PHi-C data of LCL show that rs2310141 also interacts with enhancers near *IL18RAP* and *IL1R2.* In the same LCL both rs2310241 and rs2241131 reside in PHi-C target regions which interact with the promotors in the upstream of transcription start site in *IL1RL2* and *MAP4K4*  (Supplemental Figures 2A and 2B, Supplemental Table 5).
+
+### Annotation of donor SNPs associated with death due to infection
+
+Publicly available data in the genomic atlas of human plasma proteome [@RN295] corroborate the associations we identified between lower *IL1RL1* protein plasma levels and infection death risk alleles at rs13015714 ($P=2.1\times10{-115}$), rs4851601 ($P=2.1\times10^{-7}$) and rs13019803 ($P=1.4\times10^{-28}$) While we did not measure other proteins, the genomic atlas provided strong evidence that the T allele at rs13015714 associated with decreased levels of Interleukin-18 receptor 1 protein encoded by *IL18R1* ($\beta =-.90 \pm .026$, $P=1.3\times10-264$).  In addition, eQTLgen [@RN100] data show that increased gene expression of Interleukin-18 receptor associated protein (IL18RAP), $P=3.3\times10^{-310}$ correlated with the rs13015714 T allele and [@RN295] GTex data indicates that the T variant correlates with decreased expression of *IL1RL1* in lung ($\beta =-.38 \pm.031$, $P=4.0\times10^{-118}$).[@RN110] Data extracted from the PhenoScanner database [@RN10] show the infection death risk variants reside in a region with dozens of GWAS hits (Figure \ref{fig:st2fig6}A) for multiple blood traits, inflammatory and autoimmune diseases (Supplemental Table 6). Epigenome Road Map shows rs13015714 is in the 3’ of *IL1RL1* and located in an upstream promoter across blood, HSC, T-cell and B-cell lines (Figure \ref{fig:st2fig5}C, Supplemental Table 7).[@haploreg] Phi-C data from the LCL show that all three infection-associated donor SNPs, rs13015714, rs4851601 and rs13019803, reside in target regions for enhancers near IL18RAP (Supplemental Figures 3A-C, Supplemental Table 5). [@RN143] 
+
+
+# Discussion
+
+Before HSCT, identification of patients at risk of death due to aGVHD or infection could alter approaches to GVHD and infection prophylaxis or donor selection. To date, individual SNP associations with aGVHD and infection death have neither been successfully replicated nor validated, which is attributable to small sample sizes and the fact that a large majority of variants tested for association were shown to have no biochemical  function. [@RN212] A recent study using SNPs in cytokine genes constructed high and low risk groups for acute GVHD incidence, however, predictive genetic models were not significant for non-relapse mortality.[@RN18] By leveraging the large sample size and relatively homogenous independent cohorts of DISCOVeRY-BMT we are uniquely placed to address this question and have adequate statistical power to test donor SNPs in this region for association with aGVHD or infection death. 
+We replicate the published sST2-SNP associations in DISCOVeRY-BMT HSCT donors, and in AML and MDS patients there is a correlation between sST2 levels and SNPs in the IL1RL1 region, although the signal is mutated. As expected, we demonstrated that alleles that correlated with high sST2 levels in donors correlated with death from aGVHD. In addition, both the aGVHD death risk loci, but not infection death loci, correlated with IL1R2 plasma protein levels.[@RN10; @RN295] Higher IL1R2 protein levels have been shown to be robustly and significantly associate with GVHD mortality after transplant in recipients independent of sST2 associations as shown in the (Supplemental Table 8) by Vander Lugt et al. [@RN286]  This biomarker remains underexplored in patients and donors.
+
+IL1RL1 donor alleles associated with low sST2 levels significantly associated with recipient risk of infection-death. For the donor T allele in rs1308491, linked with both low donor sST2 and significant hazard of recipient infection-death, this association was strong enough to translate to an increased hazard of TRM.   Our novel finding in DISCOVeRY-BMT, that low sST2 levels correlate with a poor health outcome (death due to infection) is not without precedent,  the T allele in rs13019803 was shown to correlate with higher mortality in a large heart health study.[@RN287] Interestingly, alleles of the SNPs that show an increased risk for infection death have consistently been shown to reduce the risk of inflammatory diseases such as asthma, atopic dermatitis, celiac disease, Crohn’s disease and IBD. For example, the T allele at rs13015714 is in perfect linkage disequilibrium (LD) ($r^2$=1) with the C allele of rs2001461, shown to be inversely associated with genome-wide significant risk of atopic dermatitis, celiac disease, Crohn’s disease and IBD [@RN290; @RN292; @RN288; @RN291; @Jostins2012; @RN294; @RN150]. In addition, variants in LD ($r^2$=1) with rs13015714, are also shown to be enriched in the transcription factor T-bet (TBX21), which specifies Th1 lineage and represses alternative T cell fates.[@RN158] Together, ChIP-seq and *IL18RAP* gene expression data indicate that the T allele at rs13015714 has increased T-bet binding and increased *IL18RAP* expression.[@RN158]  Our risk variant thus alters the binding of a lineage specific transcription factor and gene expression of one of the genes (*IL18RAP*) which forms the IL-18 receptor; IL-18 synergizes with IL-12 to induce IFN$\gamma$[@RN158].
+
+Immune response can act as a double edge sword, where attenuated response can lead to infection and too strong of a response can cause deleterious inflammation.[@RN296] Many cellular mechanisms and pathways overlap between infection defense and inflammation, it might be plausible to think that variants that render healthy donors more susceptible to inflammation (i.e. the T allele at rs13015714)  might actually protect immunosuppressed patients from infection. In other words, donors with these genetic variants would have a higher probability of having a more "reactive" immune system, which would help patients to fight infections better, once the donor cells are grafted. This would also be consistent with the fact that for example the T allele of rs13015714 is significantly associated with increased lymphocyte count ($P=1.7\times10^{-14}$), as shown in a recent Cell paper capturing allelic associations with blood cell traits[@RN100]. Therefore, lower levels of an inflammatory marker like sST2 in donors could suggest that donor cells will less likely be protective against infection in the patient. In addition it is possible, the low sST2 and increased risk of infection death relationship may actually reflect what is occurring with membrane ST2 more than soluble ST2.
+
+Indeed in murine GVHD models, we have recently shown that sST2 is secreted by intestinal pro-inflammatory T cells during gut inflammation; conversely, protective ST2-expressing Tregs are decreased.[@RN20] High membrane ST2, equivalent to low sST2, might be anti-inflammatory thereby limiting responses against pathogens. Mice are housed in conditions that prevent infection, but a murine model of low sST2 infection associated death is needed. This 1 Mb region plays an important role in the tuning of the immune response[@RN295], and likely these variants partially dictate the fine balance between infection and inflammation.
+
+The strengths of our study include the large relatively homogenous sample size, well-characterized survival outcomes and the availability of both donor and recipient genotypes. In addition, the non-risk alleles in 4 of the 5 aGVHD and infection death associated variants are common (>5%) across multiple races and ethnicities, meaning there is potential for validating the DISCOVeRY-BMT findings in other populations. Despite a large sample size, the number of patients who died from infection is not large enough to allow us to investigate death due to specific infections and patient death due to aGVHD does not comprise a large portion of our patient population, thus reducing our power to detect smaller effect sizes.  An additional limitation is the lack of longitudinal analyses, specifically we did not measure the relationship of the donor genotype with recipient sST2 levels after transplant.
+
+Evidence from independent studies show that genetic variants in the *IL1RL1* region predicted *IL1RL1* and *IL1R2* protein levels, correlated with expression of multiple genes and impacted binding of important transcription factors.  Data from our HSCT donors corroborate the SNP association with sST2 levels and show these SNPs in the *IL1RL1* region correlate with increased risk of aGVHD and infection death. Given further cell line experiments and replication in more diverse cohorts, these donor SNPs could be used in improved donor selection to help reduce risk of aGVHD and infection death in AML and MDS patients undergoing HLA-matched unrelated HSCT. 

@@ -1,0 +1,210 @@
+---
+title: "vita"
+author: "Abbas Rizvi"
+date: "9/14/2018"
+output: pdf_document  
+---
+
+```{r vita, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+\dateitem{2013}{B.S. Biology, Hacettepe University}
+\dateitem{2014}{M.Sc. Integrated Systems Biology,\\
+University of Luxembourg}
+\dateitem{2015}{M.S. Natural Sciences,\\
+Roswell Park Comprehensive Cancer Center, University at Buffalo}
+\dateitem{2016-present}{Graduate Research Associate, \\ 
+College of Pharmacy,\\
+The Ohio State University}
+
+
+\begin{filecontents*}{bibcode.tex}
+
+\bib{Karaesmen2019}{article}{
+Author = {Karaesmen, Ezgi},
+Author = {Hahn, Theresa},
+Author = {Dile, Alexander James},
+Author = {Rizvi, Abbas A},
+Author = {Wang, Junke},
+Author = {Wang, Tao},
+Author = {Haagenson, Michael D},
+Author = {Preus, Leah},
+Author = {Zhu, Qianqian},
+Author = {Liu, Qian},
+Author = {Yan, Li},
+Author = {Liu, Song},
+Author = {Haiman, Christopher A},
+Author = {Stram, Daniel},
+Author = {Pooler, Loreall},
+Author = {Sheng, Xin},
+Author = {Van Den Berg, David},
+Author = {Brock, Guy},
+Author = {Webb, Amy},
+Author = {McCarthy, Philip L},
+Author = {Pasquini, Marcelo C},
+Author = {Spellman, Stephen R},
+Author = {Lee, Stephanie J},
+Author = {Paczesny, Sophie},
+Author = {Sucheston-Campbell, Lara E},
+Journal = {Blood Adv},
+Month = {Aug},
+Number = {16},
+Pages = {2512--2524},
+Title = {Multiple functional variants in the IL1RL1 region are pretransplant markers for risk of GVHD and infection deaths.},
+Volume = {3},
+Year = {2019}
+}
+
+\bib{tang2019}{article}{
+Author = {Tang, Hancong},
+Author = {Hahn, Theresa},
+Author = {Karaesmen, Ezgi},
+Author = {Rizvi, Abbas A},
+Author = {Wang, Junke},
+Author = {Paczesny, Sophie},
+Author = {Wang, Tao},
+Author = {Preus, Leah},
+Author = {Zhu, Qianqian},
+Author = {Wang, Yiwen},
+Author = {Haiman, Christopher A},
+Author = {Stram, Daniel},
+Author = {Pooler, Loreall},
+Author = {Sheng, Xin},
+Author = {Van Den Berg, David},
+Author = {Brock, Guy},
+Author = {Webb, Amy},
+Author = {Pasquini, Marcelo C},
+Author = {McCarthy, Philip L},
+Author = {Spellman, Stephen R},
+Author = {Sucheston-Campbell, Lara E},
+Journal = {Blood Adv},
+Month = {Aug},
+Number = {15},
+Pages = {2337--2341},
+Title = {Validation of genetic associations with acute GVHD and nonrelapse mortality in DISCOVeRY-BMT.},
+Volume = {3},
+Year = {2019}
+}
+
+
+\bib{Rizvi2018}{article}{
+Author = {Rizvi, Abbas A.},
+Author = {Karaesmen, Ezgi},
+Author = {Morgan, Martin},
+Author = {Preus, Leah},
+Author = {Wang, Junke},
+Author = {Sovic, Michael},
+Author = {Hahn, Theresa},
+Author = {Sucheston-Campbell, Lara E.},
+Journal = {Bioinformatics},
+Month = {Jun},
+Number = {11},
+Title = {gwasurvivr: an R package for genome-wide survival analysis.},
+Volume = {35},
+Year = {2019}
+	}
+
+
+\bib{Karaesmen2017}{article}{
+Author = {Karaesmen, Ezgi},
+Author = {Rizvi, Abbas A.},
+Author = {Preus, Leah M.},
+Author = {McCarthy, Philip L.},
+Author = {Pasquini, Marcelo C.},
+Author = {Onel, Kenan},
+Author = {Zhu, Xiaochun},
+Author = {Spellman, Stephen},
+Author = {Haiman, Christopher A.},
+Author = {Stram, Daniel O.},
+Author = {Loreall Pooler},
+Author = {Xin Sheng},
+Author = {Qianqian Zhu},
+Author = {Li Yan},
+Author = {Qian Liu},
+Author = {Qiang Hu},
+Author = {Amy Webb},
+Author = {Guy Brock},
+Author = {Alyssa I. Clay-Gilmour},
+Author = {Sebastiano Battaglia},
+Author = {David Tritchler},
+Author = {Song Liu},
+Author = {Theresa Hahn},
+Author = {Lara E. Sucheston-Campbell},
+Journal = {Blood},
+Month = {Aug},
+Number = {13},
+Pages = {1585-1596},
+Title = {Replication and validation of genetic polymorphisms associated with survival after allogeneic blood or marrow transplant},
+Volume = {130},
+Year = {2017}
+}
+
+\bib{clay2017}{article}{
+Author = {Alyssa I. Clay-Gilmour},
+Author = {Theresa Hahn},
+Author = {Leah M. Preus},
+Author = {Kenan Onel},
+Author = {Andrew Skol},
+Author = {Eric Hungate},
+Author = {Qianqian Zhu},
+Author = {Christopher A. Haiman},
+Author = {Daniel O. Stram},
+Author = {Loreall Pooler},
+Author = {Xin Sheng},
+Author = {Li Yan},
+Author = {Qian Liu},
+Author = {Qiang Hu},
+Author = {Song Liu},
+Author = {Sebastiano Battaglia},
+Author = {Xiaochun Zhu},
+Author = {AnneMarie W. Block},
+Author = {Sheila N. J. Sait},
+Author = {Ezgi Karaesmen},
+Author = {Abbas A. Rizvi},
+Author = {Daniel J. Weisdorf},
+Author = {Christine B. Ambrosone},
+Author = {David Tritchler},
+Author = {Eva Ellinghaus},
+Author = {David Ellinghaus},
+Author = {Martin Stanulla},
+Author = {Jacqueline Clavel},
+Author = {Laurent Orsi},
+Author = {Stephen Spellman},
+Author = {Marcelo C. Pasquini},
+Author = {Philip L. McCarthy},
+Author = {Lara E. Sucheston-Campbell},
+Journal = {Blood Advances},
+Month = {September},
+Number = {20},
+Pages = {1717-1728},
+Title = {Genetic association with B-cell acute lymphoblastic leukemia in allogeneic transplant patients differs by age and sex},
+Volume = {1},
+Year = {2017}
+}
+
+
+\bib{karaesmen2015}{thesis}{
+Author = {Ezgi Karaesmen},
+Month = {August},
+School = {University at Buffalo},
+Title = {Retinoic Acid Receptors and LSD1 as Novel Targets for Prostate Cancer},
+Year = {2015}
+
+}
+
+\end{filecontents*}
+
+
+
+```{block, type="publist"}
+\begin{biblist}
+\normalsize
+\input{bibcode}
+\end{biblist} 
+```
+
+\begin{fieldsstudy}
+\majorfield*
+\end{fieldsstudy}

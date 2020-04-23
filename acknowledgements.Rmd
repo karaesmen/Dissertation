@@ -1,0 +1,22 @@
+---
+title: "acknowledgements"
+author: "Abbas Rizvi"
+date: "9/14/2018"
+output: pdf_document  
+---
+
+```{r ack_setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This work was supported by National Institute of Health/National Heart, Blood, and Lung Institute R01HL102278 and National Institute of Health/National Cancer Institute R03CA188733. 
+
+First, I would like to thank Pelotonia, not only for believing in the research that I do and funding the last two years of my PhD, but also for allowing me to become a part of the Pelotonia community and pushing me to think outside of the box. As part of my Pelotonia fundraising efforts, I taught R programming to beginners from all backgrounds, which started a wonderful cascade of events. It allowed me to realize how much I love teaching programming, I met many great people in the tech and analytical fields along the way and even became an RStudio certified instructor.
+
+I wish to thank the continuous computational support was provided by Center for Computational Research at University at Buffalo. I also would like to thank Center for International Blood and Marrow Transplant Research for extensive collaboration by providing us with clinical data as well as blood samples. CIBMTR provided continuous support, particularly in the form of feedback on our research and resources for abstract presentations at conferences. I would like to take a moment and thank every patient, donor and their loved ones for giving permission to use their data for research. Hematopoietic stem cell transplant is one of the most difficult treatments any person can go through. Even in these darkest hours they were able take their time to think about data permissions and fill out the necessary paperwork. I always remember that what I have in front of me is not a simple 0 or 1 in a column but someone's painful journey to winning or losing the fight against cancer.
+
+I wish to express my deepest gratitude to my advisor Dr. Lara Sucheston-Campbell for absolutely remarkable mentorship. She always gave me enough room and time to explore my own ideas and build my scientific story, yet she has *always* been there to guide and support me in a plethora of ways, whenever I needed. She always has the best intentions and ready to fight for me no matter the circumstances (even if I get stuck in a country due to a military coup). I feel incredibly lucky to have an advisor whose company I thoroughly enjoy even outside of academia.
+
+I would like to recognize the continuous support that Dr. Theresa Hahn provided for all my manuscripts and abstract submissions and her company during conferences. I would like to pay my special regards to Dr. Sophie Paczesny for her invaluable assistance and collaboration during the ST2 project. I wish to show my gratitude to Dr. Martin Morgan for always being such a humble, approachable and a wonderful R master who enjoys sharing his wisdom. It is my dream to be able to teach R the way he does one day. I am grateful for the patience and support Dr. Sebastiano Battaglia, my Master's co-adviser showed me while I was a novice R programmer. I believe it is thanks to him that I was able to get through that steep curve of  learning R, which opened up wonderful opportunities for me. I am indebted to Dr. Moray Campbell for starting it *all* with the CanSys program. He was the first person I ever met in the U.S. and I find it only fitting for him to be a part of my committee. I wish to thank both of my dissertation committee members Dr. Daniel Kinnamon and Dr. Kellie Archer for sacrificing their valuable time and providing feedback on my PhD work.     
+
+And finally I would like to thank Dr. Abbas Rizvi, for introducing me to new cool ways of programming each and everyday and *always* believing in me even at times I feel unsure of myself. It is thanks to him I was able convince myself that I had the skill set I needed to join Dr. Sucheston-Campbell's lab, thanks to his support I was able expand R-Ladies Columbus, thanks to his perseverence and drive that I was able to co-author our R package with him. I see now that he always had the right vision and was able to nudge me in the right direction even when I was resistant at times. I am forever indebted for every impact he had on me that made me the person I am today. I cannot wait to start our new journey together.

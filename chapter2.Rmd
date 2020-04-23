@@ -1,0 +1,318 @@
+---
+title: "chapter2"
+author: "Ezgi Karaesmen"
+date: "`r Sys.time()`"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r ch2_setup, include=FALSE}
+## This saves you from having to do this for every chunk
+knitr::opts_chunk$set(fig.path = 'figures/chapter2/',
+                      echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE,
+                      cache=FALSE,
+                      eval=TRUE)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+In accordance with Blood journal [copyright aggreement](https://ashpublications.org/blood/pages/copyright) and permission obtained from all contributed authors, manuscript \textbf{Replication and validation of genetic polymorphisms associated with survival after allogeneic blood or marrow transplant.} (Blood. 2017;130(13):1585–1596. doi:10.1182/blood-2017-05-784637) has been reused and included as Chapter 2 herein. Supplemental information and figures [(click to download PDF, 179 KB)](https://ash.silverchair-cdn.com/ash/content_public/journal/blood/130/13/10.1182_blood-2017-05-784637/4/blood784637-sup-document1.pdf?Expires=1584308397&Signature=JNe3WlP0d7lvM5IVUGn0TXchGtPzTYiCmi8~JixPsOXxjzyaH~90AoRJb03rcf28FXp5oBxljt3jGyFr2gxrEAZ-6IDgK6QsLJU~Va5EvwObJUTtK4Di4sUmHdkwpTfOV06U1MwyNCGuU~cOo83RjqqLvSW7FuXZ72uQTi75vAJyxR04lnWgvmsiTdVI8-oFgtlwqkxPs7pCiTCxFFB8JQzzdXC6KBtbcSjp8IqxM~9bKxH4woOeusC~TouULBKg0JfTnYm7K21OgGd7xUWFsWsem11gLJHnExBODDL~AyFNF43oAM-lujgvr61oG0jVo8v10WAbUbc6xSLJL6rvHg__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA)) and Supplemental tables [(click to download XLSX, 342 KB)](https://ash.silverchair-cdn.com/ash/content_public/journal/blood/130/13/10.1182_blood-2017-05-784637/4/blood784637-sup-document2.xlsx?Expires=1584308397&Signature=gerxFA1oZdFjYMUuWUCBknl6NuXsYzfQ2knYHBa22EzRov2cupZIlCm1aTDm~-yfAECF7l~CuBQM4RvCew3r5hzJiaQOW9RTtSbO04q4e5vIp~9Zn93B5oF~mSBQN2z-5BnedHBqPaCzPSaP7WRE~roz1myhEzzXLpV7Hn35RsGihWvXZowhhYUvjkcVPHdURxJNFGvKpoTCVvDtWRAaqtk2KJh1mbqspqaz2f-0D9xA9KaBGBqxf2J7-4-iLbV~DUlcH0kfGqpweDpMcuAVR94lGIAkIo6~C9NGOv~XwMUTlKgfxYudhXQV9aj3DDLqQ-5Pfhpod~iMqHGCPq-Tcw__&Key-Pair-Id=APKAIE5G5CRDK6RD3PGA) referenced in the text is available with the online version of the publication and can be downloaded by clicking on the hyperlinks. Supplemental materials referred in the text include letter "S" for figures and tables (e.g. Figure S1, Table S1 etc.)
+ 
+# Introduction
+For over a decade, researchers have conducted candidate gene association studies of patient survival outcomes after allogeneic blood or marrow transplantation (HSCT). The intent of these studies was to identify genetic variants outside of the human leukocyte antigen (HLA) region that would increase knowledge about clinical management or serve as a potential target for novel therapeutics [@RN220; @RN264; @RN260; @RN259; @RN231; @RN217; @RN266; @RN219; @RN268; @RN224; @RN279; @RN250; @RN256; @RN236; @RN269; @RN246; @RN255; @RN240; @RN276; @RN226; @RN265; @RN280; @RN235; @RN218; @RN230; @RN277; @RN275; @RN239; @RN221; @RN254; @RN241; @RN272; @RN281; @RN282; @RN273; @RN234; @RN228; @RN271; @RN252; @RN245; @RN283; @RN225; @RN244; @RN237; @RN229; @RN249; @RN216; @RN251; @RN262; @RN274; @RN253; @RN215; @RN222; @RN263; @RN267; @RN223; @RN242; @RN278; @RN227; @RN233; @RN248; @RN258; @RN243; @RN261; @RN270; @RN257; @RN214; @RN232; @RN247; @RN238]. The majority of these studies tested for associations in small datasets, ranging from a few dozen to a few hundred patients and donors, included heterogeneous diseases spanning benign to malignant hematological diseases, related and/or unrelated donors with various degrees of HLA-matching and patients treated across multiple decades, from the 1980s through early 2000s. We conducted the first adequately powered evaluation of these candidate SNP and gene hypotheses using typed and imputed data from an existing genome-wide association study (GWAS) named Determining the Influence of Susceptibility COnveying Variants Related to one-Year mortality after HSCT (DISCOVeRY-BMT) to replicate or validate these published associations [@RN298]. In addition, we leveraged the available genome-wide data from DISCOVeRY-BMT and measured the aggregate association of all SNPs in the candidate genes with survival outcomes to determine how many of these candidate genes play a significant role in survival after transplant. Lastly, using publically available data, we characterized the potential functionality of each candidate SNP in relation to the gene of interest. 
+
+# Methods
+
+## Literature Search
+An extensive literature search of PubMed was performed using to identify peer-reviewed scientific studies (published on or before December 30, 2016) that reported non-HLA genetic polymorphisms associated with survival outcomes after allogeneic HSCT, including disease-related mortality (DRM), progression-free survival (PFS), transplant-related mortality (TRM) and/or overall survival (OS). The PubMed search terms as well as inclusion and exclusion criteria are given below:
+
+```
+(SNP[Text Word] OR ("polymorphism, genetic"[MeSH Terms] OR 
+("polymorphism"[All Fields] AND "genetic"[All Fields]) OR 
+"genetic polymorphism"[All Fields] OR "polymorphism"[All Fields])) AND 
+(allo-HSCT[All Fields] OR allo-HCT[All Fields] OR 
+("unrelated"[All Fields] AND ("donor"[All Fields] OR
+"donors"[All Fields]) AND ("transplant"[All Fields] OR 
+"transplantation"[All Fields])) OR ("allogeneic"[All Fields] AND 
+("transplant"[All Fields] OR "transplantation"[All Fields])) OR 
+("hematopoietic"[All Fields] AND ("transplant"[All Fields] OR 
+"transplantation"[All Fields]))) AND (("mortality"[Subheading] OR 
+"mortality"[All Fields] OR "mortality"[MeSH Terms]) OR 
+("mortality"[Subheading] OR "mortality"[All Fields] OR 
+"survival"[All Fields] OR "survival"[MeSH Terms]) OR 
+(non[All Fields] AND ("recurrence"[MeSH Terms] OR 
+"recurrence"[All Fields] OR "relapse"[All Fields])) OR 
+non-relapse[All Fields]) AND English[Language]
+```
+
+Inclusion criteria:
+\begin{enumerate}
+\item non-HLA genes
+\item survival after HSCT as phenotype
+\end{enumerate}
+
+Excluded:
+\begin{enumerate}
+\item Reviews
+\item Working group studies
+\item Non-English papers
+\item SNPs not in build hg19
+\item Haplotypes
+\item CML or MM or lymphoma only papers
+\item Autosomal only 
+\item Microsatellites
+\end{enumerate}
+
+
+## Study Population
+Study population included in the study has been described in detail in Chapter 1.
+
+## Genotyping and Imputation
+All samples were genotyped using the Illumina Human OmniExpress BeadChip and the Illumina HumanExome BeadChip (University of Southern California Genomics Facility). Samples were assigned to plates to ensure the even distribution of patient characteristics and potential confounding variables using Optimal Sample Assignment Tool (OSAT), an R/Bioconductor software package. [@RN203] Quality assessment was done within each self-reported race group and included sample and SNP call rates, sample relatedness and sex. Samples that did not pass quality control were excluded. Typed SNPs were removed if the call rate was <98%, if there was deviation from Hardy-Weinberg equilibrium proportions or if discordance between duplicate samples was >2%. For Illumina OmniExpress chip untyped SNPs and missing typed SNPs were imputed to 1000 Genomes Project Phase 3 using IMPUTE2 [@RN204]. QCTOOL [@RN206] was used to remove imputed genotypes with info score <0.7, certainty<.7 and a minor allele frequency <0.005. The recipient-donor mismatch genome dosage calculations, described in Chapter 1, were done as the absolute value of the recipient minus donor minor allele counts. rs2066847 (SNP13) in *NOD2* was the only variant selected from the Illumina HumanExome chip for replication and validation analyses as it was not available on the OmniExpress chip following imputation. Only R-D pairs 10/10 HLA matched were genotyped with the Illumina HumanExome chip (1972 and 503 AML, ALL and MDS R-D pairs in cohorts 1 and 2, respectively)
+
+## Survival analyses 
+Prior to genetic analyses, clinical covariates for inclusion in genome-wide survival models were selected using bidirectional stepwise Cox proportional hazard models of OS, PFS, TRM and DRM using R statistical software [@RN293]. Cox proportional hazard models of OS, TRM and DRM evaluated SNPs associated with time to death with all survivors censored at 1 year post-HSCT [@RN329]. PFS was defined as the time to disease progression or death. Deaths from TRM and DRM were treated as competing risks and analyzed accordingly [@RN328]. SNP models for OS adjusted for recipient age, disease status (early/intermediate or advanced), and graft source (blood or marrow); PFS and DRM SNP models adjusted for recipient age and disease status; TRM SNP models adjusted for recipient age, graft source and body mass index (underweight/normal, overweight, or obese). Dosage data accounting for the probability of each genotype were used in all analyses of imputed data. To combine data from DISCOVeRY-BMT Cohorts 1 and 2, effect size estimates and standard errors were analyzed using METAL software [@RN208]. For all analyses, we report the meta hazard ratios (HR), confidence intervals (CI), and P-values under a fixed effects model.
+
+## Replication and validation of candidate gene studies
+Results from genetic association studies should be reproduced in independent samples in order to confirm findings.[@RN299] Researchers have defined two distinctive terms to describe the reproducibility based on differences between the original study population and the confirmation studies: replication and validation.[@RN209] Replication is defined as the original and confirmation studies both having similar inclusion criteria (including the same ethnic/ancestral population) so that any differences between the study populations can be attributed to random variation.[@RN209] Validation is defined as the original and confirmation study populations having different inclusion criteria (including different ethnic/ancestral populations) so that any differences between the original and confirmation study could be due to systematic variation.[@RN209]  Thus, replication analyses were conducted when the original study included HLA-matched unrelated donor HSCTs in patients of European ancestry. Validation analyses were performed on studies of leukemia patients of non-European ancestry, patient populations who received a HSCT from a matched related donor, or patient populations that were mixed between those who received a HSCT from related and unrelated donor. For studies of outcomes involving multiple hematologic malignancies, the entire DISCOVeRY-BMT study population was analyzed. If the original study population was specified as AML, ALL and/or MDS, the same disease inclusion criteria were applied so that the replication/validation study population aligned with that of the original study population. 
+
+## Gene-Based Association Testing
+VErsatile Gene-based Association Study 2 (VEGAS2) software was used for gene-based association testing.[@RN207] VEGAS2 uses 106 Monte Carlo simulations to test the global significance of an association for a set of selected SNPs in a defined genomic region. The linkage disequilibrium (LD) structure for each gene region is determined using the 1000 Genomes Project reference population. VEGAS2 reports a gene-based P-value for each gene using P-values from the individual SNP associations. For the gene-based replication or validation analyses, the typed (OmniExpress Chip) and/or imputed SNPs from DISCOVeRY-BMT (+/- a 10kb flanking region) and their corresponding P-values from the OS, PFS, TRM and DRM meta-analyses were used as input into the VEGAS2 software. Gene-based P-values were calculated for donor, recipient, and R-D mismatch analyses of the full cohort (ALL, AML and MDS patients) or homogenous disease subgroups (ALL or AML or MDS patients) corresponding to the analyses performed in the original studies. 
+
+## Functional Annotation
+RegulomeDB,[@Boyle_2012]  Blood expression quantitative trait loci (eQTL) Browser,[@RN321] and Variant Effect Predictor[@RN327] were used to provide functional annotation of the candidate SNPs. For each database, the raw data scores, P-values and annotations, respectively were downloaded from each website and assigned to each SNP in our list. RegulomeDB scores are categorized as follows: 1a-1f are likely to affect transcription factor binding and linked to expression of a gene target; 2a-2c are likely to affect transcription factor binding; 3a-3b are less likely to affect transcription factor binding, and > 3 has minimal binding evidence. A RegulomeDB score is assigned based on the level and evidence of functional modification attributable to the SNP [@Boyle_2012; @RN323] in multiple cell lines from a range of tissues, with scores  from 1 to 7, with 1 having the highest functional effect, supported by experimental evidence and 7 having no modifying effect.[@RN323] RegulomeDB database derives these annotations using the publicly available data sets from Gene Expression Omnibus (GEO), the Encyclopedia of DNA elements (ENCODE) project and the Roadmap Epigenome Consortium. The Blood eQTL data are derived from a study of correlations between genetic variants and gene expression in over 5000 patients, with replication in almost 3000 individuals. Herein, we consider only cis-eQTLs, defined as < 250KB distance between the SNP chromosomal position and the probe midpoint for gene expression. Variant effector predictor was used to determine the hypothetical functional importance of missense and nonsense variants based on SIFT[@RN325], Mutation Taster[@RN324] and PolyPhen-2[@RN326].
+
+# Results
+
+## Candidate Gene Studies of Survival Outcomes
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{figures/chapter2/fig1.png}
+  \caption[Study pipeline]{Pipeline performed to either replicate or validate candidate gene association studies.}
+  \label{fig:cgfig1}
+\end{figure}
+
+
+The literature search identified 70 publications that studied a total 458 SNPs and 2 multi-allelic polymorphisms in 171 genes (Figure \ref{fig:cgfig1}, Table S1). Studies included patients who received a transplant from an HLA-matched unrelated donor (19 articles), an HLA-matched related donor (23 articles), or both (28 articles) (Table S1). Study populations included patients and donors of European ancestry (53 articles), Asian ancestry (15 articles), or mixed genomic ancestry (2 articles) (Table S1). 
+
+A total of 14 articles assessed genetic variation in HLA matched unrelated donor (URD) HSCT patients of European ancestry, but only 7 of these articles reported significant associations (P<0.05 or an author specified significance threshold) and thus comprise our replication study (Table S2, Table S3). A total of 56 articles tested associations in either a combination of related and unrelated donors (RD-URD), only related donors (RD) and/or in non-European populations; 39 of these 56 articles reported at least one significant SNP association with survival outcome and we attempted to validate the significant findings from these 39 articles (Table S2, Table S4).
+
+
+## Replication
+
+DISCOVeRY-BMT cohorts were used to replicate published studies of European American acute leukemia or MDS patients treated with an unrelated donor HSCT. [@RN217; @RN279; @RN265; @RN218; @RN221; @RN254; @RN282; @RN271; @RN252; @RN249; @RN223; @RN227; @RN258; @RN270] Of the 7 articles whose findings we attempted to replicate, 2 articles tested multi-allelic models in *NOD2* [@RN271] and *CCR5* [@RN252]; 5 articles tested single SNP associations in *TGFB1* [@RN217], *CD274* [@RN218], *CD40* [@RN218], *TNFSF4* [@RN218], *HMGB1* [@RN254],*IL1A* [@RN282], *IL1B* [@RN282], and *NOD2* [@RN265] (Table \ref{tab:cgtab2}, Figure \ref{fig:cgfig2}, Table S3). [@RN217; @RN265; @RN218; @RN254; @RN282; @RN271; @RN252]
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{figures/chapter2/fig2.png}
+  \caption[Replication attempts of previously reported significant candidate gene association studies in DISCOVeRY- BMT]{Replication attempts of previously reported significant candidate gene association studies in DISCOVeRY- BMT.
+  Survival association p-values as reported in previous literature (top) and replication attempts of these associations in DISCOVeRY-BMT cohort (bottom) are shown as data points. Horizontal panels indicate the genes that these polymorphisms and haplotypes are located in or close to as reported by the previous studies. Shapes represent associations with survival outcomes OS ($\bigcirc$), PFS ($\triangle$) or TRM ($\square$) and colors correspond to donor (red), recipient (blue) or donor-recipient mismatch (green) polymorphisms. The size of the point represents the sample size of the study, with larger points reflecting a bigger sample size. Shown on x-axis are the nine polymorphisms from the literature reporting associations at p<0.05 with OS, PFS or TRM by one or more previously published studies and the y-axis is the $-log_{10}(p-value)$. The red line indicates p=0.05. Details on the haplotypes are described in the text.}
+  \label{fig:cgfig2}
+\end{figure}
+
+
+The two *NOD2* associations were based on a three-variant R-D pair model [rs2066844 (SNP8), rs2066845 (SNP12) and rs2066847 (SNP13)] and single SNP associations with SNP13. [@RN280] The null type is when the R-D pair are homozygous common allele for all three SNPs and the effect allele combination is the presence of 1 or more minor alleles at any of the three SNPs within the R-D pair. In a study of 196 patients who received an unrelated donor HSCT for AML or ALL, the *NOD2* multi-SNP model was significantly associated with OS (RR: 1.6, 95% CI 1.1-2.4, P=0.02) and TRM (RR: 1.6, 95% CI 1.1-2.4, P=0.02). [@RN271] However, in the DISCOVeRY-BMT AML and ALL patients (n=1597) treated with an unrelated donor HSCT, there was no association with OS (HR: 1.03, 95% CI 0.9-1.2, P=0.72) or TRM (HR: 1.1, 95% CI 0.8-1.4, P=0.6, Figure \ref{fig:cgfig2}, Table S3). In a study of 342 unrelated donor genotypes matched with AML or ALL patients, rs2066847 (SNP13) alone significantly increased risk of TRM and OS approximately 3-fold (P=0.001) and 2.5 (P=0.001), respectively [@RN265], however DISCOVeRY-BMT donor genotypes, did not associate with either TRM (HR: 1.17, 95% CI 0.78-1.74, P=0.45) or OS (HR: 0.98, 95% CI 0.73-1.31, P=0.89, in ALL or AML patients (Table \ref{tab:cgtab2}, Figure \ref{fig:cgfig2}, Table S3). 
+
+
+\begin{sidewaystable}
+  \centering
+  \captionsetup{font=small}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}|c|c|c|c|c|c|l|l|l|l|l|l|l|l|@{}}
+\toprule
+\multicolumn{10}{|c|}{Replication of Previous Literature} & \multicolumn{4}{c|}{DISCOVeRY-BMT} \\ \midrule
+PMID & Gene & SNP & Disease & Outcome & Genome & \multicolumn{1}{c|}{N} & \multicolumn{1}{c|}{Effect size} & \multicolumn{1}{c|}{95\% CI} & \multicolumn{1}{c|}{P} & \multicolumn{1}{c|}{N} & \multicolumn{1}{c|}{HR} & \multicolumn{1}{c|}{95\% CI} & \multicolumn{1}{c}{P} \\ \midrule
+20068218 & \textit{CCR5} & H1/H1 genotype & Mixed & PFS & R & 163/-- & 1.4 & 1.1-1.7 & 0.005 & 294 vs 2489 & 0.99 & 0.8-1.2 & 0.92 \\
+20068218 & \textit{CCR5} & D-R group 3 vs D-R group 1 & Mixed & OS & M & 140 vs 842 & 1.4 & 1.1-1.8 & 0.004 & 270 vs 2237 & 0.97 & 0.8-1.2 & 0.81 \\
+20068218 & \textit{CCR5} & D-R group 3 vs D-R group 1 & Mixed & PFS & M & 140 vs 842 & 1.5 & 1.2-1.9 & 0.001 & 270 vs 2237 & 1.01 & 0.8-1.2 & 0.86 \\
+20068218 & \textit{CCR5} & D-R group 3 vs D-R group 2 & Mixed & OS & M & 140 vs 139 & 1.6 & 1.2-2.1 & 0.003 & 270 vs 252 & 0.84 & 0.6-1.1 & 0.19 \\
+20068218 & \textit{CCR5} & D-R group 3 vs D-R group 2 & Mixed & PFS & M & 140 vs 139 & 1.8 & 1.3-2.4 & 0.001 & 270 vs 252 & 0.9 & 0.7-1.1 & 0.37 \\
+26348892 & \textit{CD274} & rs10975123 & Mixed & OS & R & 1157/-- & NP & NP & 0.03 & 2887 & 0.96 & 0.9-1.1 & 0.48 \\
+26348893 & \textit{CD40} & rs3765457 & Mixed & OS & R & 1157/-- & NP & NP & 0.03 & 2887 & 1.08 & 1-1.2 & 0.16 \\
+26348894 & \textit{CD40} & rs3765457 & Mixed & PFS & R & 1157/-- & NP & NP & 0.003 & 2886 & 1.1 & 1-1.2 & 0.06 \\
+26348895 & \textit{CD40} & rs3765457 & Mixed & TRM & R & 1157/-- & NP & NP & 0.002 & 2887 & 1.14 & 1-1.3 & 0.1 \\
+19819342 & \textit{HMGB1} & rs2249825 & Mixed & OS & R & 276/146 & 0.1/NS & 0.02-0.9/NS & 0.04/NS & 2887 & 1.04 & 0.9-1.2 & 0.48 \\
+19819343 & \textit{HMGB1} & rs2249825 & Mixed & PFS & R & 276/146 & 0.3/NS & 0.1-1/NS & 0.05/NS & 2886 & 1.06 & 1-1.2 & 0.27 \\
+12752101 & \textit{IL1A} & rs1800587 & Mixed & OS & M & 90/-- & 0.2 & 0.05-0.6 & 0.01 & 2790 & 1.03 & 0.9-1.1 & 0.57 \\
+12752102 & \textit{IL1A} & rs1800587 & Mixed & TRM & M & 90/-- & 0.2 & 0.05-0.7 & 0.01 & 2790 & 1.07 & 0.9-1.2 & 0.36 \\
+12752103 & \textit{IL1B} & rs16944 & Mixed & OS & D & 90/-- & 0.1 & 0.05-0.4 & 0.01 & 2793 & 0.99 & 0.9-1.1 & 0.98 \\
+12752104 & \textit{IL1B} & rs16944 & Mixed & OS & M & 90/-- & 0.2 & 0.06-0.5 & 0.01 & 2790 & 1.04 & 0.9-1.1 & 0.43 \\
+12752105 & \textit{IL1B} & rs16944 & Mixed & TRM & R & 90/-- & 0.3 & 0.1-1.1 & 0.01 & 2887 & 1.6 & 0.9-1.2 & 0.37 \\
+12752106 & \textit{IL1B} & rs16944 & Mixed & TRM & D & 90/-- & 0.1 & 0.04-0.4 & 0.01 & 2793 & 0.2 & 0.8-1.0 & 0.2 \\
+12752107 & \textit{IL1B} & rs16944 & Mixed & TRM & M & 90/-- & 0.1 & 0.05-0.5 & 0.01 & 2790 & 0.99 & 0.9-1.1 & 0.96 \\
+17724347 & \textit{NOD2} & 3 SNPs & ALL-AML & OS & M & 196/-- & 1.6 & 1.1-2.4 & 0.02 & 1597 & 1.03 & 0.9-1.2 & 0.72 \\
+17724347 & \textit{NOD2} & 3 SNPs & ALL-AML & TRM & D & 196/-- & 1.6 & 1.1-2.4 & 0.02 & 1597 & 1.07 & 0.8-1.4 & 0.61 \\
+18976442 & \textit{NOD2} & rs2066847 & Mixed & OS & D & 342/-- & 2.5 & 1.5-4.3 & 0.001 & 2164 & 0.98 & 0.7-1.3 & 0.89 \\
+18976442 & \textit{NOD2} & rs2066847 & Mixed & TRM & D & 342/-- & 2.9 & 1.5-5.5 & 0.001 & 2164 & 1.17 & 0.8-1.7 & 0.45 \\
+26611472 & \textit{TGFB1} & rs1800469 & Mixed & OS & R & 493/-- & 1.5 & 1-2.2 & 0.031 & 2887 & 1.01 & 0.9-1.1 & 0.89 \\
+26611472 & \textit{TGFB1} & rs1800469 & Mixed & OS & R & 493/-- & 1.8 & 1.1-2.9 & 0.02 & 2887 & 1.01 & 0.9-1.1 & 0.89 \\
+26348892 & \textit{TNFSF4} & rs10912564 & Mixed & OS & D & 1157/1188 & 0.82/ & 0.72-0.95/ & 0.009/ & 2793 & 0.98 & 0.9-1.1 & 0.58 \\
+ & \textit{} &  &  &  &  &  & 1.04 & 0.89-1.20 & 0.64 &  &  &  &  \\
+26348892 & \textit{TNFSF4} & rs10912564 & Mixed & PFS & D & 1157/1188 & 0.86/ & 0.74-0.98/ & 0.03/ & 2792 & 1 & 0.9-1.1 & 0.93 \\
+ & \textit{} &  &  &  &  &  & 1.06 & 0.92-1.23 & 0.44 &  &  &  &  \\
+26348892 & \textit{TNFSF4} & rs10912564 & Mixed & TRM & D & 1157/1188 & 0.78/ & 0.65-0.93/ & 0.006/ & 2793 & 1 & 0.8-1.1 & 0.5 \\
+ & \textit{} &  &  &  &  &  & 1.01 & 0.82-1.25 & 0.91 &  &  &  &  \\ \hline
+\end{tabular}
+}
+\caption[Replication of Previous Candidate Gene Association Studies Reported.]{Replication of Previous Candidate Gene Association Studies Reported. Summary statistics of studies that included a replication or validation cohort are separated with "/"; effect sizes for most studies were hazard ratios, however some studies reported odds ratio or relative risk; Genome: Donor (D), Recipient (R), Mismatch (M); NP indicates that the information on effect size was not presented in the original publication or the supplemental materials; NS indicates association was not significant.}
+\label{tab:cgtab2}
+\end{sidewaystable}
+
+
+<!-- Cells with \/ show replication or validation results within the published study; -->
+<!-- § CCR5 H1\/H1 genotypes and risk groups defined using multi\-allelic models described in original publication; -->
+<!-- * NOD2\/CARD15 3 SNPs multi\-allelic model defined as presence of at least one copy of minor allele in rs2066844 (SNP8), rs2066845 (SNP12), or rs2066847 (SNP13); rs2066847 (SNP13) in NOD2 was the only variant selected from the Illumina HumanExome chip for replication and validation analyses as it was not available on the OmniExpress chip following imputation. Only R-D pairs 10/10 HLA matched were genotyped with the Illumina HumanExome chip (1972 and 503 AML, ALL and MDS R-D pairs in cohorts 1 and 2, respectively); \# effect sizes for most studies were hazard ratios (HRs), however some studies reported odds ratio (OR) or relative risk (RR). -->
+
+
+
+One of the largest candidate gene studies (N=1370) showed a significant association of *CCR5* H1/H1 genotype in recipients and R-D risk groups with both PFS and OS. [@RN252] Neither the *CCR5* H1/H1 genotype (n=163) nor the author-defined genotype risk groups of H1/H1 [@RN252] were significantly associated with PFS or OS in the DISCOVeRY-BMT cohorts (Figure \ref{fig:cgfig2}, Table S3). While a large initial sample size the risk groups of interest were substantially smaller than the full cohort (Table \ref{tab:cgtab2}). Attempts to replicate single SNP associations in *TNFSF4*, [@RN218] *TGFB1*, *HMGB15*, *IL1A* [@RN282], and *IL1B* [@RN282] also failed (Table \ref{tab:cgtab2}, Figure \ref{fig:cgfig2}, Table S3). 
+
+
+
+## Validation
+We attempted to validate 36 polymorphisms in 26 genes from 39 candidate gene articles (Table S2, Table S4), [@RN264; @RN260; @RN219; @RN268; @RN224; @RN250; @RN236; @RN269; @RN255; @RN240; @RN276; @RN226; @RN280; @RN235; @RN230; @RN277; @RN275; @RN239; @RN241; @RN272; @RN273; @RN234; @RN228; @RN245; @RN283; @RN225; @RN237; @RN216; @RN262; @RN274; @RN253; @RN215; @RN263; @RN233; @RN248; @RN261; @RN257; @RN238] including: *ABCB1* [@RN277; @RN239], *CD14* [@RN216], *CTLA4* [@RN235; @RN225; @RN262; @RN274; @RN253; @RN215; @RN257], *CYP2C19* [@RN245], *DAAM2* [@RN238], *EP300* [@RN234], *ESR1* [@RN219], *GSTA2* [@RN224], *GZMB* [@RN240], *ICAM1* [@RN248], *IL23R* [@RN250, @RN269], *IL6* [@RN264, @RN260, @RN219], *IRF3* [@RN228], *KLRK1* [@RN255], *LIG3* [@RN248], *MTHFR* [@RN275, @RN273, @RN237], *MUTYH* [@RN248], *NOD2* [@RN276; @RN280; @RN230; @RN241; @RN261], *NOS1* [@RN230], *P2RX7* [@RN272], *TDG* [@RN248], *TIRAP* [@RN219], *TLR4* [@RN216], *TYMP* [@RN226], and *VDR* [@RN268; @RN236; @RN283; @RN263]. These studies reported significant genetic associations with survival after transplant in patients who received a HLA-matched related donor HSCT (19 articles) or had a study population including HLA-matched related and unrelated donor HSCT patients, without stratification of results (17 articles). We also attempted to validate survival associations seen in non-European leukemia patients who received an unrelated donor HSCT (3 articles). We present results of variants reported significant in at least two separate publications in Table \ref{tab:cgtab3} and Figure \ref{fig:cgfig3}.
+
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{figures/chapter2/fig3.png}
+  \caption[Validation attempts of significant candidate gene association studies reported at least twice.]{Validation attempts of significant candidate gene association studies reported at least twice.
+  Survival association p-values as reported in previous literature (top) and validation attempts of these associations in DISCOVeRY-BMT cohort (bottom) are shown as data points. Horizontal panels indicate the genes that these 17 polymorphisms are located in or close to as reported by the previous studies. Shapes represent associations with survival outcomes DRM ($+$), OS ($\bigcirc$), PFS ($\triangle$) or TRM ($\square$) and colors correspond to donor (red), recipient (blue) or donor-recipient mismatch (green) polymorphisms. The size of the point represents the sample size of the study, with larger points reflecting a bigger sample size. Shown on x-axis are the 17 polymorphisms from the literature reporting associations at p<0.05 with any shown outcomes at least twice and the y-axis is the $-log_{10}(p-value)$. The red line indicates p=0.05. Details on the haplotypes are described in the text.}
+  \label{fig:cgfig3}
+\end{figure}
+
+
+Our validation analyses identified only one variant associated at P<0.05. Donor variation in rs1800795 (*IL6*) associated with OS (HR: 1.11, 95% CI 1.0-1.2, P<0.02) (Figure \ref{fig:cgfig3}, Table S4). This SNP association was initially reported in a single study by Balavarca et al., 2015, (HR: 1.29, 95% CI 1.07-1.55, P=0.007) in patients with acute leukemia, CML, or lymphoma treated with a matched related or unrelated donor HSCT (n=743). 
+
+\begin{landscape}
+\fontsize{6}{6}\selectfont
+\setlength\LTleft{30pt}            
+\setlength\LTright{100pt}
+\begin{longtabu} to 0.7\linewidth {|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+\caption[Validation of Previous Candidate Gene Association Studies Reported At least Twice.]{Validation of Previous Candidate Gene Association Studies Reported At least Twice.
+Genome: Donor (D); Recipient (R); Mismatch (M)
+Survival outcomes: overall survival (OS); progression-free survival (PFS); disease-related mortality (DRM); and transplant-related mortality (TRM)
+Graft source: related donor (RD); unrelated donor (URD); related donors and unrelated donors in same study (RD-URD)
+NP indicates that effect size estimates were not presented in the original publication or supplemental materials.
+In some cases, only percentage difference in survival outcomes between genotypes were presented.
+NS indicates the results were stated as not significant in the publication but no further information regarding effect size or p-values were available.
+Effect sizes for most studies were hazard ratios, but some studies reported odds ratio or relative risk.}
+\label{tab:cgtab3}\\
+\hline
+\toprule
+\multicolumn{11}{|c|}{\textbf{Validation of Previous Literature}} & \multicolumn{4}{c|}{\textbf{DISCOVeRY-BMT}} \\* \midrule
+\endfirsthead
+%
+\multicolumn{15}{c}%
+{{\bfseries Table \thetable\ continued from previous page}} \\
+\endhead
+%
+\bottomrule
+\endfoot
+%
+\endlastfoot
+%
+\multicolumn{1}{|c|}{\textbf{PMID}} & \multicolumn{1}{c|}{\textbf{Gene}} & \multicolumn{1}{c|}{\textbf{SNP}} & \multicolumn{1}{c|}{\textbf{Disease}} & \multicolumn{1}{c|}{\textbf{Outcome}} & \multicolumn{1}{c|}{\textbf{Genome}} & \multicolumn{1}{c|}{\textbf{Graft}} & \multicolumn{1}{c|}{\textbf{N}} & \multicolumn{1}{c|}{\textbf{Effect size}} & \multicolumn{1}{c|}{\textbf{95\% CI}} & \multicolumn{1}{c|}{\textbf{P}} & \multicolumn{1}{c|}{\textbf{N}} & \multicolumn{1}{c|}{\textbf{HR}} & \multicolumn{1}{c|}{\textbf{95\% CI}} & \multicolumn{1}{c|}{\textbf{P}} \\* \midrule
+16769591 & \textit{ABCB1} & rs1045642 & Mixed & TRM & R & RD-URD & 82 & 2.4 & 1.1-5.3 & 0.031 & 2887 & 1.03 & 0.9-1.2 & 0.71 \\ 
+21896346 & \textit{ABCB1} & rs1128503 & Mixed & OS & M & RD & 156 & 0.4 & 0.2-0.8 & 0.003 & 2790 & 1.01 & 0.9-1.1 & 0.9 \\ 
+16769591 & \textit{ABCB1} & rs2032582 & Mixed & OS & R & RD-URD & 82 & 2.7 & 1.4-5.1 & 0.003 & 2887 & 0.96 & 0.9-1.0 & 0.39 \\
+27118383 & \textit{CTLA4} & rs231775 & ALL & OS & D & RD & 83 & 0.3 & 0.1-0.8 & 0.022 & 558 & 0.99 & 0.8-1.2 & 0.88 \\
+19092854 & \textit{CTLA4} & rs231775 & Mixed & OS & D & RD & 536 & 1.5 & 1.0.1-2 & 0.019 & 2793 & 0.99 & 0.9-1.1 & 0.76 \\
+23973330 & \textit{CTLA4} & rs231775 & Mixed & OS & R & RD & 94 & 2.5 & 1.2-5.5 & 0.01 & 2887 & 0.94 & 0.9-1.0 & 0.14 \\
+20020126 & \textit{CTLA4} & rs231775 & Mixed & OS & R & RD & 133 & 0.7 & 0.4-1.1 & 0.014 & 2887 & 0.94 & 0.9-1.0 & 0.14 \\
+20020126 & \textit{CTLA4} & rs231775 & Mixed & PFS & R & RD & 133 & 0.5 & 0.3-1.0 & 0.025 & 2886 & 0.97 & 0.9-1.0 & 0.4 \\
+23973330 & \textit{CTLA4} & rs231775 & Mixed & TRM & R & RD & 94 & 2.2 & 1.1-4.5 & 0.03 & 2887 & 0.96 & 0.9-1.1 & 0.54 \\
+17384200 & \textit{CTLA4} & rs3087243 & Mixed & OS & D & RD & 536 & 3.8 & 1.8-8.2 & 0.001 & 2793 & 0.98 & 0.9-1.1 & 0.65 \\
+17384200 & \textit{CTLA4} & rs3087243 & Mixed & PFS & D & RD & 536 & 1.7 & 1.0-2.9 & 0.049 & 2792 & 0.98 & 0.9-1.1 & 0.51 \\
+19092854 & \textit{CTLA4} & rs3087243 & AML & OS & R & RD-URD & 138 & 2.8 & 1.4-5.6 & 0.004 & 1770 & 0.98 & 0.9-1.1 & 0.69 \\
+19092854 & \textit{CTLA4} & rs3087243 & AML & PFS & R & RD-URD & 138 & NP & NP & 0.004 & 1769 & 1.02 & 0.9-1.1 & 0.67 \\
+22178694 & \textit{CTLA4} & rs4553808 & Mixed & OS & D & RD-URD & 164 & 1.8 & 1.1-3.0 & 0.014 & 2793 & 0.98 & 0.9-1.1 & 0.73 \\
+22178694 & \textit{CTLA4} & rs4553808 & Mixed & PFS & D & RD-URD & 164 & 1.7 & 1.1-2.7 & 0.016 & 2792 & 0.98 & 0.9-1.1 & 0.65 \\
+19332044 & \textit{CTLA4} & rs5742909 & Mixed & DRM & D & RD & 120 & 5.9 & 1.2-2.9 & 0.031 & 2793 & 1.01 & 0.8-1.2 & 0.93 \\
+20173782 & \textit{IL23R} & rs11209026 & Mixed & OS & R & RD & 201 & 0.5 & 0.3-0.9 & 0.028 & 2887 & 0.97 & 0.8-1.1 & 0.7 \\
+18209723 & \textit{IL23R} & rs11209026 & Mixed & TRM & D & RD-URD & 407 & NP & NP & 0.028 & 2793 & 1.11 & 0.9-1.4 & 0.39 \\
+18209723 & \textit{IL23R} & rs11209026 & Mixed & TRM & R & RD-URD & 407 & NP & NP & 0.043 & 2887 & 0.87 & 0.7-1.1 & 0.22 \\
+26214138 & \textit{IL6} & rs1800795 & Mixed & OS & D & RD-URD & 743 & 1.3 & 1.1-1.6 & 0.007 & 2793 & 1.11 & 1.0-1.2 & 0.02 \\
+18976446 & \textit{IL6} & rs1800795 & Mixed & PFS & D & RD-URD & 56 & NP & NP & 0.001 & 2792 & 1.06 & 1.0-1.1 & 0.15 \\
+18976446 & \textit{IL6} & rs1800795 & Mixed & OS & R & RD-URD & 56 & NP & NP & 0.01 & 2887 & 1.01 & 0.9-1.1 & 0.88 \\
+19234509 & \textit{IL6} & rs1800795 & Mixed & OS & R & RD-URD & 121/45 & NP/NS & NP/NS & 0.04/NS & 2887 & 1.01 & 0.9-1.1 & 0.88 \\
+19234509 & \textit{IL6} & rs1800795 & Mixed & TRM & R & RD-URD & 121/45 & NP/NS & NP/NS & 0.02/NS & 2887 & 1.01 & 0.9-1.1 & 0.91 \\
+19234509 & \textit{IL6} & rs1800797 & Mixed & TRM & R & RD-URD & 121/45 & NP/NS & NP/NS & 0.01/NS & 2887 & 1.01 & 0.9-1.2 & 0.82 \\
+17445163 & \textit{MTHFR} & rs1801133 & Mixed & OS & D & RD-URD & 1058 & 0.7 & 0.5-0.9 & 0.007 & 2793 & 0.96 & 0.9-1.1 & 0.44 \\
+17445163 & \textit{MTHFR} & rs1801133 & Mixed & OS & D & RD-URD & 1058 & 1.5 & 1.1-1.9 & 0.009 & 2793 & 0.96 & 0.9-1.1 & 0.44 \\
+21920473 & \textit{MTHFR} & rs1801131 & Mixed & OS & D & RD & 140 & 4.7 & 1.3-16.5 & 0.02 & 2793 & 1.02 & 0.9-1.1 & 0.73 \\
+21920473 & \textit{MTHFR} & rs1801131 & Mixed & PFS & D & RD & 140 & 4.4 & 1.6-12.8 & 0.04 & 2792 & 1 & 0.9-1.1 & 0.97 \\
+17028897 & \textit{MTHFR} & rs1801133 & Mixed & TRM & R & RD & 72 & 6.4 & 1.9-21.2 & 0.04 & 2887 & 0.94 & 0.8-1.1 & 0.399 \\
+15090455 & \textit{NOD2} & 3 SNPs* & Mixed & TRM & D & RD-URD & 168 & 2.5 & 1.2-5.4 & 0.02 & 1964 & 1.07 & 0.8-1.4 & 0.62 \\
+15090455 & \textit{NOD2} & 3 SNPs* & Mixed & TRM & R & RD-URD & 168 & 2.4 & 1.1-5.0 & 0.02 & 1964 & 1.22 & 0.9-1.6 & 0.149 \\
+15090455 & \textit{NOD2} & 3 SNPs* & Mixed & TRM & M & RD-URD & 168 & 6 & 2.6-14.1 & 0.001 & 1964 & 1.12 & 0.9-1.4 & 0.317 \\
+17018387 & \textit{NOD2} & 3 SNPs* & Mixed & PFS & R & RD & 71 & 2.3 & 1.0-5.4 & 0.04 & 1964 & 1.14 & 1.0-1.3 & 0.141 \\
+19219079 & \textit{NOD2} & 3 SNPs* & Mixed & TRM & M & RD & 85 & 3.3 & 1.2-9.1 & 0.02 & 1964 & 1.12 & 0.9-1.4 & 0.317 \\
+23169244 & \textit{NOD2} & rs2066842 & Mixed & PFS & D & RD-URD & 307/87 & 1.7/NP & 1.1-2.7/NP & 0.015/NP & 2792 & 1.02 & 0.9-1.1 & 0.734 \\
+21799103 & \textit{NOD2} & rs2066847 & Mixed & TRM & R & RD-URD & 567 & 2 & 1.0-4.0 & 0.049 & 2164 & 0.82 & 0.5-1.3 & 0.426 \\
+19005482 & \textit{VDR} & rs731236 & Mixed & OS & R & RD & 107 & 4.6 & 1.1-19.1 & 0.04 & 2887 & 1.02 & 0.9-1.1 & 0.682 \\
+19005482 & \textit{VDR} & rs731236 & Mixed & TRM & R & RD & 107 & 3.1 & 1.4-7.1 & 0.006 & 2887 & 0.98 & 0.9-1.1 & 0.737 \\
+22035017 & \textit{VDR} & rs731236 & Mixed & OS & R & RD & 147 & 2.4 & 1.1-5.2 & 0.027 & 2887 & 1.02 & 0.9-1.1 & 0.682 \\
+22035017 & \textit{VDR} & rs731236 & Mixed & PFS & R & RD & 147 & 5.2 & 1.3-21.8 & 0.023 & 2886 & 1.02 & 0.9-1.1 & 0.697 \\
+12203138 & \textit{VDR} & rs7975232 & Mixed & OS & D & RD & 80 & 2.03 & NP & 0.023 & 2793 & 0.96 & 0.9-1.0 & 0.333 \\
+18312595 & \textit{VDR} & rs7975232 & Mixed & OS & R & RD-URD & 114 & NP & NP & 0.038 & 2887 & 1.01 & 0.9-1.1 & 0.789 \\ \hline
+\end{longtabu}
+\end{landscape}
+
+
+SNPs within *NOD2* were the most frequently studied and reported of all candidate gene association studies in our validation set (Table S2). *NOD2* is a susceptibility gene for inflammatory bowel disease and may be involved in Crohn’s disease. [@RN280] We attempted to validate studies that reported an association of *NOD2* and survival outcomes in HLA-matched related and unrelated donor HSCT patients [@RN280; @RN230; @RN241] or HLA-matched related donor HSCT patients [@RN276; @RN261]. Three studies reported significant findings between the presence of the *NOD2* multi-SNP polymorphism in either donor or recipient with TRM [@RN280; @RN261]  or PFS, [@RN276]  however this did not validate in the DISCOVeRY-BMT cohorts (Figure \ref{fig:cgfig3}, Table \ref{tab:cgtab3}). There was also no significant association of the single variant rs2066842 in related/unrelated donors with PFS, [@RN230] or the single variant rs2066847 (SNP13) in recipients of related/unrelated donor BMTs with TRM (Figure \ref{fig:cgfig3}, Table \ref{tab:cgtab3}) [@RN241] in the DISCOVeRY-BMT cohorts.  
+
+Due to its known functions and perceived implications in transplant biology, [@RN274] associations with multiple SNPs in *CTLA4* have been tested in numerous transplant populations (Table S2), with four *CTLA4* SNPs (rs3087243, rs231775, rs4553808, rs5742909) reported as significantly associated with survival after related or unrelated donor allogeneic HSCT in acute leukemias, CML, lymphomas, MDS, and other hematological disorders (Table \ref{tab:cgtab3}). Attempts to validate CTLA4 SNPs with DRM, PFS, OS, and TRM were unsuccessful in the DISCOVeRY-BMT cohorts (Table \ref{tab:cgtab3}, Figure \ref{fig:cgfig3}, Table S4). 
+
+The remaining results of the 25 additional candidate genes containing SNPs that were tested in the DISCOVeRY-BMT cohorts are summarized in Tables S4 and 3 as well as Figure \ref{fig:cgfig3}; no SNP associations were found at P<0.05. 
+
+Importantly, the P-value distribution of the single SNP associations showed no deviation from the null expectation with 95% confidence intervals (Figure S2), suggesting that we cannot reject the null hypothesis of no association with survival outcome (including the one *IL6* association). Additionally, previously reported significant associations in both replication and validation sets each had mean HR of 1.0 in the DISCOVeRY-BMT cohorts, supporting the overall distribution of null P-values for these candidate SNPs in DISCOVeRY-BMT. 
+
+## Gene based replication and validation of previous studies
+Candidate gene studies first selected genes based on their hypothesized or known function, and then selected variants within that gene for single SNP or haplotype testing. Thus, while SNPs and haplotypes were tested individually for association, the hypotheses from the literature can be considered gene-based. The density of typed and imputed markers in the DISCOVeRY-BMT recipients and donors allows us to measure the aggregate effect of all SNPs within each candidate gene on survival. Genes were selected for testing from the same literature summarized above for the replication and validation SNP and haplotype analyses. VEGAS2 gene-based testing did not reveal any associations at P<0.05 with any of the survival outcomes in either the replication or validation groups (Table S5).  
+
+## Candidate polymorphism annotation 
+Candidate gene SNPs were analyzed using the RegulomeDB, [@Boyle_2012] Variant Effect Predictor (VEP) [@RN327] and Blood eQTL Browser [@RN321] databases to assess their functional characteristics and better understand their biological framework. These analyses showed that the majority (80%) of the previously reported SNPs had RegulomeDB scores greater than 3 (Figure \ref{fig:cgfig4}, Table S6), indicating that these SNPs have minimal to no effect on modifying transcription. This distribution aligns with the overall distribution of SNPs in the genome indicating that the selected SNPS are not enriched for their impact on gene expression or transcription factor binding. Results from VEP can be accessed at the following link: http://mar2017.archive.ensembl.org/Homo_sapiens/Tools/VEP/Results?db=core;tl=BkdUQSkgrx3YK9Ln-3170778. Of the two protein coding variants in our replication and validation analyses, VEP shows that only one SNP rs2066845 (SNP12) in *NOD2*, is predicted to be damaging and disease causing by SIFT [@RN325], Polyphen-2 [@RN326] and Mutation Taster [@RN324]. 
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{figures/chapter2/fig4.png}
+  \caption[RegulomeDB score distribution of previously studied polymorphisms]{RegulomeDB score distribution of previously studied polymorphisms. RegulomeDB categories are shown on the x-axis and counts of SNPs falling into RegulomeDB score category are shown on the y-axis. Grey portion of the bar indicates the counts of SNPs that were tested but not reported significant, black portion shows the counts of SNPs that were reported significant at least once. Score descriptions are given below. \linebreak
+1b	eQTL + TF binding + any motif + DNase footprint + DNase peak \linebreak
+1d	eQTL + TF binding + any motif + DNase peak \linebreak
+1f	eQTL + TF binding/DNase peak \linebreak
+2a	TF binding + matched TF motif + matched DNase footprint + DNase peak \linebreak
+2b	TF binding + any motif + DNase footprint + DNase peak \linebreak
+2c	TF binding + matched TF motif + DNase peak \linebreak
+3a	TF binding + any motif + DNase peak \linebreak
+4	TF binding + DNase peak \linebreak
+5	TF binding or DNase peak \linebreak
+6	Motif hit \linebreak
+7	No evidence \linebreak
+}
+  \label{fig:cgfig4}
+\end{figure}
+
+
+The Blood eQTL browser determines if candidate SNPs have a significant role in cis gene expression of the candidate gene. Of the 171 genes included in our literature search results, 52% have at least one significant cis-eQTL at a probe-level false discovery rate (FDR) < 0.05. On a genome-wide level, approximately 44% of genes have blood cis-eQTLs (FDR P<0.05). However, despite over half of the candidate genes having blood cis-eQTLS, only 13% of the candidate SNPs reported in these articles are blood cis-eQTLs. Thus, while blood eQTLs have been identified in these genes, they were not genotyped and analyzed in these candidate gene studies. Furthermore, almost half of the eQTLs in the candidate gene studies are correlated with expression that is not the candidate gene but rather a nearby gene. For example, rs7975232 in VDR is an eQTL for SLC48A1, not VDR and variants studied in CTLA4 are eQTLs for CD28 not CTLA4. The remaining eQTLs were correlated with expression of the candidate gene of interest, but in most cases, were also significant eQTLs for a number of other nearby genes (Table S6).
+
+# Discussion
+
+Our study aimed to replicate or validate all previous genetic association studies that investigated the non-HLA genetic effects on allogeneic HSCT survival. Since previous studies selected SNPs in candidate genes, we conducted both single SNP and gene-based analyses to determine the aggregated SNP associations within candidate genes while still accounting for dependence between signals due to LD.    
+
+The only association with P<0.05 in our replication and validation analyses using the DISCOVeRY-BMT cohorts was the donor SNP rs1800795 in *IL6* with OS. As reported,18 the rationale for studying this SNP was based on the immunological function of *IL6* and two prior findings showing that it was associated with GvHD [@RN305], and response to chronic Hepatitis C virus therapy. [@RN306] We found no evidence of association at P<0.05 between donor SNP rs1800795 with death due to either GvHD or infection in the DISCOVeRY-BMT cohort (data not shown). Furthermore, rs1800795 is located in the intronic region of *IL6*, has no effect on *IL6* expression or levels, [@snipa] but rather is an eQTL for two other nearby genes. [@gtex, @snipa] 
+
+In addition to exploring this *IL6* association further we felt the validation of the CCR5 associations of H1/H1 genotype with outcome required additional efforts, as these associations were found in the largest study we attempted to validate, samples were also from CIBMTR (earlier years than our study population) and unlike many of the other studies survival effects only started to appear approximately two years post-transplant. Analyses outlined in Table \ref{tab:cgtab2} were performed but without censor at 1 year for overall survival (median survival time 13.7 months, range <1 month-125.6 months) and progression free survival (median time 11.1 months, range <1 month-125.6 months). There were no genotype associations with either outcome at P<0.10. 
+
+Our inability to replicate or validate previous candidate gene associations could be due to several factors including differences in inclusion criteria with respect to disease type/status, donor relation, or to differences in our endpoint of 1-year survival versus longer-term survival. The previous non-HLA genetic associations were hypothesized to be independent of underlying hematologic disease, therefore we would expect to replicate or validate these associations in a homogeneous patient population such as DISCOVeRY-BMT. However, when possible we aligned our study population to the original candidate gene study (i.e. restricted to AML and/or ALL patients only). While DISCOVeRY-BMT focused on early 1-year survival, which may have different genetic contributions than later (>1 year) survival, most of the published survival curves in the significant candidate gene articles show clear separation by genotype well before 1-year post-transplant thus the significant published variants do not appear to be correlated with only long-term survival.
+
+The large sample size of the DISCOVeRY-BMT cohorts provides adequate statistical power to attempt replication and validation of previously published candidate gene analyses [@RN298], however we did not reproduce these findings, similar to two other recent studies attempting to replicate previous candidate gene associations with GvHD after HSCT. [@RN320, @RN197] Other reports have also concluded that a substantial amount of the published candidate gene literature has presented false positive associations. [@RN331] 
+
+Confirming genetic association studies is vital to identify true positive genetic variants that may contribute to complex phenotypes. False associations can lead to wasted time, energy and money in pursuit of confirmatory studies and can potentially harm patients by delaying clinical discovery or by applying clinical studies too quickly without replication. Annotation of the previously reported candidate SNPs using publically available data show that few of the previously selected variants are functional; only one SNP is predicted to be damaging or deleterious, only a small proportion of SNPs are correlated with expression, and an even smaller number are cis-eQTLs for the target gene of interest. Thus, while we did not replicate or validate these associations, the SNPs selected are not linked to functional annotation nor are they clearly related to the candidate genes. This underscores a fundamental problem with candidate gene studies which are hostage to the state of scientific knowledge at the time. Adequately powered testing of genetic associations with clinical outcomes remains critical to discover and replicate genetic associations with the ultimate goal of improving patient outcomes.
+

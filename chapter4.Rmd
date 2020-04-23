@@ -1,0 +1,236 @@
+---
+title: "chapter4"
+author: "Ezgi Karaesmen"
+date: "03/23/2020"
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r ch4_setup, include=FALSE}
+knitr::opts_chunk$set(fig.path = 'figures/chapter4',
+                      echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE,
+                      cache=FALSE,
+                      eval=FALSE)
+library(tidyverse)
+library(kableExtra)
+```
+
+
+# Introduction
+
+In early applications of hematopoietic stem cell transplantation (HSCT), donor hematopoietic stem cells (dHSCs) were seen merely as a graft that simply replaces the damaged bone marrow following chemotherapy and radiation, eventually establishing a functioning bone marrow in patient. Later studies showed that dHSCs also exerted a strong antileukemic effect via alloreactivity, a phenomenon called graft versus tumor effect (GVT), which contributed to cure. This revelation led clinicians and researchers to reconsider pre-transplant conditioning regimen guidelines used in clinic. Instead of relying solely on supralethal doses of chemotherapy and radiation that are highly toxic, it was possible to exert sufficient antileukemic effect even with lower doses thanks to GVT effect. This led to development of reduced-intensity conditioning (RIC) regimens with less toxicity, allowing older or unfit patients to be eligible for HSCT [@Gyurkocza_2014]. Currently conditioning regimens administered prior to allogeneic HSCT are categorized in two main groups based on their intensity: (1) myeloablative conditioning (MAC), which comprises high doses of chemotherapy and radiation, administered to achieve complete bone marrow ablation and (2) reduced intensity conditioning (RIC), which consists of lower doses of chemotherapy and radiation and does not achieve complete bone marrow ablation. Even though majority of patients receiving RIC are on average older and less fit, the benefits of using RIC over MAC remain inconclusive as patients receiving RIC show decreased risk of transplant related mortality (TRM) and increased risk of relapse compared to MAC, resulting in comparable overall survival (OS) rates [@Aoudjhane_2005; @Scott_2005; @Shimoni_2005; @Martino_2006; @ALYEA20061047; @Flynn_2007; @Luger_2011]. A recent clinical trial conducted with AML and MDS patients also showed no significant OS difference between RIC and MAC arms at 18 months. However, trial was ceased early due to significant increase in relapse rate among RIC arm over MAC arm [@Scott_2017]. Over the years, use of RIC has been increasing dramatically, accounting for more than half of allogeneic HSCT in the United States in 2018, while including patients that are potential candidates for MAC [@cibmtr_slides]. *Better understanding patient subgroups that can benefit or detriment from receiving MAC vs RIC can help clinicians in selecting the appropriate regimen intensity, ultimately improving HSCT outcomes.*
+
+Prior studies in blood cancer and solid tumor patients have shown that single nucleotide polymorphisms (SNPs) can affect patient response, toxicity  and survival after treatment with most commonly used chemotherapeutic agents in conditioning regimens: cyclophosphamide, busulfan and melphalan [@Low_2009; @Pinto_2009; @Vangsted_2010; @Yee_2013; @Uppugunduri_2013; @Giglia_2014]. Thus, it is possible SNPs may also affect patient response or toxicity to a given conditioning regimen or regimen intensity, guide regimen selection for a given patient or determine if disease recurrence is more likely for a given regimen or intensity. SNPs associated with patient response are significantly enriched for expression quantitative trait loci (eQTLs) [@Gamazon_2010]. eQTLs are genomic loci that explain significant proportions of inter-individual variability in mRNA levels in a given tissue for one or more genes [@Nica_2013]. This suggests that selecting eQTLs a priori for the identification of genetic predictors for patient response could provide important insights into the likely function of identified SNPs. We hypothesized that recipient eQTL SNPs may interact with conditioning intensity to impact post-BMT OS and performed a genome-wide interaction study (GWIS) to test the interaction of eQTL SNPs with conditioning intensity (MAC or RIC) and post-BMT OS in a large cohort of AML, MDS and ALL patients [Karaesmen_2017]. We detected significant recipient SNP associations in a ~25kb haplotype block located adjacent to \textit{TRIM44} on Chromosome 11 with 1-year OS among patients who received RIC but not MAC. 
+
+# Methods
+
+## Study population
+
+Our analyses included AML, MDS and ALL patients with European ancestry from the DISCOVeRY-BMT study as explained in Chapter 1.3. Distribution of clinical variables among patients who received MAC vs RIC have been compared using Student's T-test or Pearson's Chi-squared test. Distributions of age, disease (AML, MDS or ALL) and graft source were significantly different between the two conditioning intensity groups. Details of the patient characteristics are shown in Table \ref{tab:dbmt_macvsric}. 
+
+## Genotyping
+
+Genotyping methods have been explained in detail in Chapter 1.3, genotypes used for analyses presented in this chapter have been imputed with Sanger Imputation Server [@hrc]. To improve statistical power, analyses were conducted only with blood cis-eQTL SNPs. List of cis-eQTL SNPS were obtained from eQTLGen Consortium,, which incorporates 37 datasets, with a total of 31,684 individuals [@Vosa_2018]. A SNP was deemed to be a significant cis-eQTL if the eQTL analysis for the SNP had an FDR < 0.05 and SNP was located in less than 1 megabase from the gene whose expression levels are affected [@Vosa_2018]. After quality control and filtering (minor allele frequency >1% and info score > 0.8) 1,401,296 recipient cis-eQTL SNPs were included in the genome-wide interaction study. Number of independent eQTLs ($r^2 < .2$) were determined using the pruning engine from PLINK v1.9, resulting in 53,127 independent eQTLs.       
+
+## Statistical Analyses
+
+### Survival analyses of OS, DRM and TRM
+
+To better understand the contribution of conditioning intensity to post-HSCT oucomes, we conducted univariate and multivariate survival analyses with Kaplan-Meier and Cox proportional hazards models respectively [@kaplan_meier; @cox1972]. Univariate analyses were conducted by combining two DISCOVeRY-BMT cohorts. Multivariate analyses were conducted in both DISCOVeRY-BMT cohorts separately and meta analyses were conducted with fixed-effects model using `metafor` R package [@metafor; @rlang]. Survival plots and hazard ratio plots were generated with R packages `survminer` and `ggplot2` [@survminer; @ggplot2].
+
+### Genome-wide interaction analyses
+Recipient eQTL SNPs were tested for interaction with MAC/RIC for OS in the two DISCOVeRY-BMT cohorts. Cox proportional hazard models for OS included patient age, disease status at transplant, graft source (bone marrow or peripheral blood) as covariates and an interaction term for each eQTL SNP and conditioning intensity (SNP $\times$ MAC/RIC). All analyses were conducted using `gwasurvivr` R package [@Rizvi_2018]. To combine data from DISCOVeRY-BMT Cohorts 1 and 2, effect size estimates and standard errors of the interaction term were analyzed under a fixed effects model using METAL software [@metal]. After multiple test correction for 53,127 independent eQTLs, any SNP with an interaction meta p-value $< 9.41 \times 10^{-7}$ was deemed significant. For significant interactions, we performed Likelihood Ratio Test (LRT) and stratified analyses of MAC and RIC groups for OS, DRM and TRM to further understand the contribution of DRM or TRM to the OS. Survival curves were generated with `survminer` R package [@survminer]. Regional association plots were generated with webtool SNiPA [@snipa].
+
+# Results
+
+## Patient Characteristics
+ 
+ Patient characteristics are shown in Table \ref{tab:dbmt_macvsric}. Distributions of age and proportions of disease (AML, MDS or ALL), graft source, KPS/LPS scores were significantly different between the two conditioning intensity groups. There were 1,540 MAC and 570 RIC cases in DICOVeRY-BMT cohort 1, 552 MAC and 225 RIC cases in cohort 2.
+
+\begin{table}[!]
+\caption[Characteristics of the DISCOVeRY-BMT cohort by myeloablative (MAC) and reduced intensity (RIC) conditioning groups.]{Characteristics of the DISCOVeRY-BMT cohort by myeloablative (MAC) and reduced intensity (RIC) conditioning groups. Number (n) of patients are shown for each category, including percentages in parentheses (\%).  (*) denotes significant differences between MAC and RIC groups for a given characteristic.}
+\label{tab:dbmt_macvsric}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}llll@{}}
+\toprule
+Category                      & Recipient Characteristics             & MAC N=2092 n (\%) & RIC N=795 n (\%) \\ \midrule
+Age, years mean (range) *     &                                       & 39 ( 0-71)        & 57 (2-78)        \\ \midrule
+Donor Age, years mean (range) &                                       & 33 (18-60)        & 34 (19-61)       \\ \midrule
+Sex                           & Male                                  & 1143 (55\%)       & 477 (60\%)       \\
+                              & Female                                & 949 (45\%)        & 318 (40\%)       \\ \midrule
+Donor sex                     & Male                                  & 1450 (69\%)       & 550 (69\%)       \\
+                              & Female                                & 642 (31\%)        & 245 (31\%)       \\ \midrule
+Disease *                     & ALL                                   & 523 (25\%)        & 54  (7\%)        \\
+                              & AML                                   & 1218 (58\%)       & 552 (69\%)       \\
+                              & MDS                                   & 351 (17\%)        & 189 (24\%)       \\ \midrule
+Disease Status                & Early                                 & 1483 (71\%)       & 563 (71\%)       \\
+                              & Advanced                              & 609 (29\%)        & 232 (29\%)       \\ \midrule
+KPS/LPS *                     & 90-100                                & 565 (27\%)        & 302 (38\%)       \\
+                              & \textless{}90                         & 1336 (64\%)       & 436 (55\%)       \\
+                              & Missing                               & 191  (9\%)        & 57  (7\%)        \\ \midrule
+Year of HCT *                 & C1, 2000-2002                         & 301 (14\%)        & 51  (6\%)        \\
+C1 = cohort1, C2 = cohort 2   & C1, 2003-2005                         & 554 (26\%)        & 204 (26\%)       \\
+                              & C1, 2006-2008                         & 685 (33\%)        & 315 (40\%)       \\
+                              & C2, 2000-2004                         & 52  (2\%)         & 19  (2\%)        \\
+                              & C2, 2005-2008                         & 86  (4\%)         & 40  (5\%)        \\
+                              & C2, 2009-2011                         & 414 (20\%)        & 166 (21\%)       \\ \midrule
+BMI                           & Normal                                & 767 (37\%)        & 254 (32\%)       \\
+                              & Obese                                 & 628 (30\%)        & 252 (32\%)       \\
+                              & Overweight                            & 649 (31\%)        & 276 (35\%)       \\
+                              & Underweight                           & 48  (2\%)         & 13  (2\%)        \\ \midrule
+Graft source *                & Bone Marrow                           & 844 (40\%)        & 111 (14\%)       \\
+                              & Peripheral blood                      & 1248 (60\%)       & 684 (86\%)       \\ \midrule
+MAC Conditioning Regimen      & Cyclophosphamide + Busulfan +/- Other & 659 (32\%)        &                  \\
+                              & Cyclophosphamide + TBI +/- Other      & 924 (44\%)        &                  \\
+                              & Other                                 & 509 (24\%)        &                  \\ \midrule
+RIC Conditioning Regimen      & (A) Fludarabine + Busulfan +/-Other   &                   & 275 (35\%)       \\
+                              & (B) Fludarabine + Melphalan +/-Other  &                   & 218 (27\%)       \\
+                              & (C) Fludarabine + TBI +/-Other        &                   & 156 (20\%)       \\
+                              & (D) Other                             &                   & 146 (18\%)       \\ \bottomrule
+\end{tabular}%
+}
+\end{table}
+
+
+## Univariate survival analyses between MAC and RIC groups
+
+In order to replicate previous findings and understand survival differences between conditioning intensity groups Kaplan-Meier analyses were conducted. At 12 months, OS rate was significantly different between groups ($P = 0.017$), 60% (95% CI, 58% to 62%) with MAC and 54% (95% CI, 51% to 58%) with RIC, as shown in Figure \ref{fig:os_surv_noSNP}. Risk for DRM was also significantly higher with RIC ($P = 0.00041$), at 12 months estimated risk of death were 24% (95% CI, 22% to 26%) with MAC and 31% (95% CI, 27% to 34%) with RIC. Interestingly, there were no significant differences in TRM ($P = 0.75$) and at 12 months, estimated risks were 21% (95% CI, 19% to 23%) with MAC and 21% (95% CI, 18% to 24%) with RIC, cumulative hazard curves are shown in Figure \ref{fig:trm_surv_noSNP}.  
+
+\begin{figure}[]
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter4/noSNP_OScurv_pct.png}
+    \caption[Overall Survival Kaplan-Meier curves by conditioning intensity groups]{Overall Survival Kaplan-Meier curves by conditioning intensity groups: MAC, myeloablative conditioning; RIC, reduced-intensity conditioning.}
+    \label{fig:os_surv_noSNP}
+\end{figure}
+
+\begin{figure}[]
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter4/noSNP_DRMcurv_cumhaz.png}
+    \caption[Disease related mortality cumulative hazard curves by conditioning intensity groups]{DRM cumulative hazards by conditioning intensity groups: MAC, myeloablative conditioning; RIC, reduced-intensity conditioning.}
+    \label{fig:drm_surv_noSNP}
+\end{figure}
+
+\begin{figure}[]
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter4/noSNP_TRMcurv_cumhaz.png}
+    \caption[Transplant related mortality cumulative hazard curves by conditioning intensity groups]{TRM cumulative hazards by conditioning intensity groups: MAC, myeloablative conditioning; RIC, reduced-intensity conditioning.}
+    \label{fig:trm_surv_noSNP}
+\end{figure}
+
+
+## Multivariate analyses with OS, DRM and TRM
+
+To better understand the contribution of conditioning intensity while adjusting for other important clinical factors that are known to impact survival, we conducted multivariate survival analyses for OS, DRM and TRM in two DISCOVeRY-BMT cohorts and combine the results with meta analyses. Hazard ratios and 95% confidence intervals of all covariates included in the models for OS, DRM and TRM are shown for DISCOVeRY-BMT cohorts and meta analyses in Figure \ref{fig:hrplot_noSNP} and Table \ref{tab:clin_restbl}. When adjusted for other clinical variables, conditioning intensity did not significantly associate with OS or DRM in either DISCOVeRY-BMT cohorts or meta analyses. Furthermore, Receiving RIC was associated with reduced risk of TRM in cohort 1 (HR:0.73 95%CI (0.56-0.95), $P = 0.018$) but not in cohort 2 (HR:0.92 95%CI (0.6-1.41) , $P = 0.69$). Disease status at transplant and having MDS diagnosis was consistently associated with OS and DRM but showed no significant association with TRM in both DISCOVeRY-BMT cohorts. Having advanced disease at transplant increased risk of OS as well DRM. Being diagnosed with MDS was associated with lower risk of OS or DRM compared AML or ALL.  While association with age across outcomes and cohorts were significant, hazard ratios showed minimal contribution to risk of mortality. Associations with LPS/KPS Score were inconsistent across cohorts and outcomes and meta analyses indicated heterogeneity between the two DISCOVeRY-BMT cohorts for OS. 
+
+\begin{figure}[]
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter4/noSNP_hrPlot.png}
+    \caption[Multivariate survival hazard rartios for OS, DRM and TRM]{Multivariate survival hazard rartios for OS, DRM and TRM. }
+    \label{fig:hrplot_noSNP}
+\end{figure}
+
+
+\begin{table}[]
+\caption[Mutlivariate survival analyses in DISCOvERY-BMT cohorts]{Summary statistics of multi-variate survival analyses in the DISCOVeRY-BMT cohort.}
+\label{tab:clin_restbl}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}ll|ll|ll|lll@{}}
+\cmidrule(l){3-9}
+\multicolumn{1}{c}{} & \multicolumn{1}{c|}{} & \multicolumn{2}{c|}{Cohort 1} & \multicolumn{2}{c|}{Cohort 2} & \multicolumn{3}{c|}{Meta} \\ \midrule
+Outcome & Covariates                     & HR (95\% CI)     & P        & HR (95\% CI)     & P        & HR (95\% CI)     & P        & Heterogneity P \\ \midrule
+DRM     & Conditioning: RIC              & 1.14 (0.9-1.45)  & 2.62E-01 & 1.33 (0.91-1.94) & 1.44E-01 & 1.19 (0.98-1.46) & 8.51E-02 & 0.51           \\
+        & Diagnosis: AML                 & 0.99 (0.76-1.29) & 9.61E-01 & 0.83 (0.48-1.44) & 5.16E-01 & 0.96 (0.76-1.22) & 7.45E-01 & 0.57           \\
+        & Diagnosis: MDS                 & 0.46 (0.31-0.68) & 1.05E-04 & 0.4 (0.21-0.76)  & 5.41E-03 & 0.45 (0.32-0.62) & 1.99E-06 & 0.68           \\
+        & Disease Status: Advanced       & 3.44 (2.82-4.19) & 1.56E-34 & 2.57 (1.83-3.61) & 5.23E-08 & 3.19 (2.69-3.79) & 1.50E-40 & 0.15           \\
+        & LPS/KPS Score \textgreater{}90 & 0.76 (0.62-0.93) & 6.52E-03 & 0.98 (0.71-1.37) & 9.28E-01 & 0.81 (0.68-0.96) & 1.75E-02 & 0.18           \\
+        & Patient Age                    & 1.01 (1-1.01)    & 1.42E-01 & 1.02 (1-1.03)    & 1.47E-02 & 1.01 (1-1.01)    & 1.28E-02 & 0.17           \\ \midrule
+OS      & Conditioning: RIC              & 0.94 (0.79-1.12) & 4.77E-01 & 1.15 (0.86-1.52) & 3.44E-01 & 0.99 (0.85-1.15) & 9.19E-01 & 0.24           \\
+        & Diagnosis: AML                 & 0.78 (0.65-0.94) & 8.98E-03 & 0.68 (0.46-0.99) & 4.28E-02 & 0.76 (0.65-0.9)  & 1.21E-03 & 0.50           \\
+        & Diagnosis: MDS                 & 0.66 (0.51-0.84) & 8.03E-04 & 0.59 (0.38-0.91) & 1.80E-02 & 0.64 (0.52-0.79) & 4.48E-05 & 0.67           \\
+        & Disease Status: Advanced       & 2.04 (1.76-2.37) & 3.92E-21 & 1.79 (1.38-2.31) & 1.03E-05 & 1.98 (1.74-2.25) & 3.16E-25 & 0.38           \\
+        & Graft source: Peripheral blood & 0.75 (0.64-0.87) & 1.77E-04 & 0.76 (0.57-1)    & 4.63E-02 & 0.75 (0.65-0.86) & 2.18E-05 & 0.94           \\
+        & LPS/KPS Score \textgreater{}90 & 0.71 (0.61-0.82) & 3.42E-06 & 0.95 (0.75-1.22) & 7.05E-01 & 0.76 (0.67-0.87) & 2.82E-05 & 0.04           \\
+        & Patient Age                    & 1.01 (1.01-1.02) & 2.87E-06 & 1.02 (1.01-1.02) & 4.72E-04 & 1.01 (1.01-1.02) & 6.22E-09 & 0.55           \\ \midrule
+TRM     & BMI: Obese                     & 1.16 (0.91-1.49) & 2.37E-01 & 1.22 (0.79-1.87) & 3.74E-01 & 1.18 (0.95-1.46) & 1.42E-01 & 0.86           \\
+        & BMI: Overweight                & 1.05 (0.81-1.35) & 7.10E-01 & 1 (0.65-1.55)    & 9.95E-01 & 1.04 (0.83-1.29) & 7.45E-01 & 0.86           \\
+        & Conditioning: RIC              & 0.72 (0.55-0.94) & 1.66E-02 & 0.92 (0.6-1.4)   & 6.92E-01 & 0.77 (0.62-0.97) & 2.51E-02 & 0.35           \\
+        & Diagnosis: AML                 & 0.6 (0.46-0.78)  & 1.06E-04 & 0.5 (0.3-0.85)   & 1.07E-02 & 0.58 (0.46-0.73) & 4.12E-06 & 0.57           \\
+        & Diagnosis: MDS                 & 0.88 (0.64-1.21) & 4.37E-01 & 0.9 (0.52-1.58)  & 7.25E-01 & 0.89 (0.67-1.17) & 3.95E-01 & 0.94           \\
+        & Graft source: Peripheral blood & 0.68 (0.54-0.84) & 5.14E-04 & 0.78 (0.52-1.18) & 2.38E-01 & 0.7 (0.58-0.85)  & 2.99E-04 & 0.54           \\
+        & LPS/KPS Score \textgreater{}90 & 0.68 (0.55-0.84) & 2.96E-04 & 0.95 (0.66-1.36) & 7.67E-01 & 0.74 (0.61-0.88) & 1.04E-03 & 0.12           \\
+        & Patient Age                    & 1.02 (1.01-1.03) & 2.25E-06 & 1.01 (1-1.03)    & 2.94E-02 & 1.02 (1.01-1.02) & 2.37E-07 & 0.53           \\ \bottomrule
+\end{tabular}%
+}
+\end{table}
+
+## Genome-wide interaction results
+
+To investigate role of genetics in the sucess of two conditioning intensity groups, we conducted a genome-wide interaction study od OS with both DISCOVeRY-BMT cohorts. GWIS of patient SNPs showed associations with two eQTL SNPs: rs10437630 (imputed) and rs3911014 (typed) with significant genome-wide interaction meta p-values of $8.44 \times 10^{-7}$ and $9.26 \times 10^{-7}$ respectively (Figure \ref{fig:manplot}).
+
+\begin{figure}[]
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter4/R_mixed_OS_SNPxCondInt_eQTL.png}
+    \caption[Manhattan plot of recipient SNP meta interaction p-values]{Manhattan plot of recipient SNP meta interaction p-values for OS. Each dot represents an eQTL SNP, chromosome position and $-log_{10}(P{meta})$ of the $SNP \times Conditioning Intensity$ interaction term are shown on x and y axes.}
+    \label{fig:manplot}
+\end{figure}
+
+ Both SNPs are in perfect linkage disequilibrium ($R^2=1$) representing a ~25 kb haplotype block which contains 23 eQTLs located in an intergenic region near \textit{PAMR1}, \textit{FJX1} and \textit{TRIM44} genes on chromosome 11p13 (35.56-35.59 Mb) (Figure \ref{fig:regplot})
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter4/rs3911014_RegionalAssocPlot.png}
+    \caption[Regional association plot of recipient SNP meta interaction p-values]{Regional association plot of recipient SNP meta interaction p-values for OS. Each dot represents an eQTL SNP, chromosome position and $-log_{10}(P{meta})$ of the $SNP \times Conditioning Intensity$ interaction term are shown on x and y axes.}
+    \label{fig:regplot}
+\end{figure}
+
+## Stratified survival analyses with rs3911014
+
+To better understand the interaction between rs3911014 and conditioning regimen intensity, we conducted stratified analyses of rs3911014 in MAC and RIC patients. Stratified univariate analyses with rs3911014 genotypes showed significant differences between genotypes for RIC but no significant differences were observed in the MAC group. Furthermore, rs3911014 was associated with OS and DRM but not with TRM in patients who received RIC (Figures \ref{fig:OS_snp}, \ref{fig:DRM_snp} and \ref{fig:TRM_snp}) .
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter4/ASH2019_OS2.png}
+    \caption[OS curves with rs3911014 genotypes stratified by conditioning intensity]{Stratified OS curves with rs3911014 genotypes conditioning intensity groups: MAC, myeloablative conditioning; RIC, reduced-intensity conditioning.}
+    \label{fig:OS_snp}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter4/ASH2019_DRM2.png}
+    \caption[DRM curves with rs3911014 genotypes stratified by conditioning intensity]{Stratified DRM curves with rs3911014 genotypes conditioning intensity groups: MAC, myeloablative conditioning; RIC, reduced-intensity conditioning.}
+    \label{fig:DRM_snp}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter4/ASH2019_TRM2.png}
+    \caption[TRM curves with rs3911014 genotypes stratified by conditioning intensity]{Stratified TRM curves with rs3911014 genotypes conditioning intensity groups: MAC, myeloablative conditioning; RIC, reduced-intensity conditioning.}
+    \label{fig:TRM_snp}
+\end{figure}
+
+
+
+In MAC patients, rs3911014 was not significantly associated with DRM, TRM or OS. However, in RIC patients, we detected an association between rs3911014 and OS ($P_{meta}= 1.0 \times 10^{-5}$, $HR_{meta} = 1.4, [1.2-1.6]$), with the C allele increasing the risk of death within the first year post-BMT. The OS association in patients receiving RIC was driven by a higher risk of DRM ($P_{meta}=3.7\times 10^{-5}$, $HR_{meta} = 1.6, [1.3-1.9]$) and not TRM ($P_{meta}=0.18$, $HR_{meta} = 1.2, [0.9-1.5]$). Figure \ref{fig:hrplot_SNP} show hazards with confidence intervals for all outcome models by cohort and meta analyses, including p-values.  
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter4/SNP_hrPlot.png}
+    \caption[Multivariate survival hazard ratios for OS, DRM and TRM among RIC recipients]{Multivariate survival hazard ratios for OS, DRM and TRM by two cohorts and meta analyses including genom-wide significant SNP rs3911014 only among patients who received RIC.}
+    \label{fig:hrplot_SNP}
+\end{figure}
+
+
+Post-hoc sensitivity analysis by RIC regimen found the strongest effect in the FluMel+/-Other group ($P_{meta}=7.8\times 10^{-5}$). These results suggest that if given RIC, patients with rs3911014 C allele have a higher risk of dying from disease relapse  after transplant and utilization of different regimens or intensities should be considered. 
+
+
+# Discussion
+
+Improving our precision in determining patients that can benefit or detriment from either types of conditioning intensity remains to be a crucial challenge. While many patients that are believed to be fit enough receive MAC, increasingly more patients have been treated with RIC, despite being fit enough for MAC to offset the risk of TRM. Univariate analyses of RIC and MAC show significant but modest increases in DISCOVeRY-BMT cohorts, showing 6% decrease in OS and 7% increase in DRM risk among RIC compared MAC group. However, no significant differences between RIC and MAC were observed with TRM. However, when adjusted for other factors, conditioning intensity do not show any significant associations with OS or DRM, but receiving RIC was associated with lower risk of TRM. Furthermore, having advanced disease at transplant was the most important contributor to lower OS and increased risk of DRM but showed no association with TRM. These findings suggest the importance of adjusting for multiple variables and explore other factors that may contribute to differential survival outcomes in RIC and MAC groups.
+
+We hypothesized that recipient SNPs could have a differential impact on post-HSCT outcomes depending on the conditioning intensity given to the patient. Our GWIS detected two SNPs: rs10437630 (imputed) and rs3911014 (typed) located on chromsome 11 to have genome-wide significant interaction with conditioning intensity. Both SNPs are in perfect LD and represent a large haplotype region near \textit{TRIM44}. rs3911014 is an eQTL for TRIM44 in whole blood and resides in an ~2 kb enhancer region that shows chromatin looping interactions with the transcription start site of TRIM44. The C allele at rs3911014 is associated with decreased expression. TRIM44 has been shown to promote cancer cell survival and was suggested as a biomarker for diagnosis and prognosis in multiple cancers in multiple recent studies [@Kawabata_2017; @Tan_2017; @Peng_2018; @Xiong_2018; @Wei_2019; @Zhou_2019]. Interestingly TRIM44, was shown to promote quiescent multiple myeloma cell occupancy and survival in the osteoblastic niche [@Chen_2018].
+
+Stratified analyses with rs3911014 showed that C allele was associated with higher risk of overall death and this was mainly driven by DRM and not TRM among patients who received RIC. Given rs3911014 is associated with blood expression levels of \textit{TRIM44}, a gene with evidence in promoting cancer cell survival, it maybe plausible to suggest that patients with rs3911014 C allele might have a bone marrow niche that is more accommodating to leukemia stem cell survival. For such patients, receiving RIC might not be providing sufficient cytotoxicity and rely too much on the GVT effect, which in turn fails to close this cytotoxic gap. However, if patients with C allele receive MAC, they become less reliant on the GVT effect and achieve sufficient cytoxicity by conditioning alone. Therefore, rs3911014 was not associated with OS, DRM or TRM among patients who receive MAC, but increases risk or overall death and DRM among patient who receive RIC. Upon replication of our findings, it can be suggested that patients with rs3911014 C allele who are fit enough should receive MAC. If patient is deemed unfit due to age or comorbidities, utilization of different regimens including novel therapies should be considered for conditioning.
+

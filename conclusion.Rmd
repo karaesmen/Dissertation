@@ -1,0 +1,52 @@
+---
+title: "conclusion"
+author: "Ezgi Karaesmen"
+date: "`r Sys.time()`"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r conclusion_setup, include=FALSE}
+## This saves you from having to do this for every chunk
+knitr::opts_chunk$set(
+                      echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE,
+                      cache=FALSE,
+                      eval=TRUE)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+Throughout this dissertation we explored the association of germline non-HLA genetic variants with survival outcomes following a HLA-matched unrelated donor hematopoietic stem cell transplant (HSCT). We took advantage of the unique *D*etermining the *I*nfluence of *S*usceptibility *CO*nveying *V*ariants *R*elated to one-*Y*ear mortality after *BMT* (DISCOVeRY-BMT) study which we described in detail in Chapter 1. In Chapter 2, we attempted to replicate or validate  previously published candidate gene association studies in the context of HSCT and showed that none of the results replicated or validated in the much larger and homogeneous cohort of DISCOVeRY-BMT, suggesting that these results were likely false positives. In Chapter 3 we explored donor genetic variants previously shown to be genome-wide associated with soluble ST2 levels in serum. Among these variants we found multiple donor loci associated with death due to graft versus host disease (GVHD) or infection after HSCT. In Chapter 4 we conduted a genome-wide interaction study with whole blood expression quantitative loci (eQTL) and coniditioning intensity given to patient prior to transplant. We found two eQTLs with genome-wide significant interaction, which impacted the expression of *TRIM44* gene, which promotes cancer cell survival and is a prognostic marker for multiple cancers. Finally, we built a PostgreSQL database to store and easily query all genome-wide association results generated from DISCOVeRY-BMT.
+
+We took three approaches to explore such associations herein: (1) candidate gene, (2) endophenotype and (3) genome-wide. While each approach presents different set of challenges or advantages as discussed in Chapter 1. However, regardless of the approach taken beyond the typical quality control steps needed, certain key points should be considered while conducting a genetic association study:
+
+\begin{enumerate}
+\item \textbf{Publicly available datasets relevant to phenotype of interest}\\
+Today more data is publically available to researchers than ever before. Many consortia and databases offer web applications or API that allow researchers to easily access such datasets. While identifiable raw genetic data is not made public, summary statistics from large cohort studies for a plethora of traits and phenotypes are readily available to researchers. Certainly, these existing datasets should be considered and taken into account as preliminary data while designing a study. But beyond preliminary results, these existing genetic annotations can also be integrated in the analyses to improve power by implementing a gatekeeper approach, Mendelian randomization or other Bayesian models. 
+
+\item \textbf{Conducting team science}\\
+Regardless of the phenotype, any genetic research requires a multidisciplinary effort for success. DISCOVeRY-BMT is a great example of such team science: initial clinical data and blood sample collection steps was done by Center for International Blood and Marrow Transplant Research, genotyping was conducted by genotyping facilities at the University of Southern California, adjudication of all ~3,000 outcomes were accomplished by a committee of clinicians and epidemiologists, genetic data was cleaned and imputed by bioinformaticions, all analyses were conducted on University at Buffalo Center of Computational Research computing clusters and any necessary programming help was readily available from staff software engineers and we were in constant contact with clinicians and clinical epidemiologists while conducting our analyses to have a good understanding of the phenotype. Therefore, any genetic research should be able to bring members of different scientific backgrounds, with inevitably different philosopies together to integrate these different perspectives to solve a complex problem. 
+
+\item \textbf{Appropriate computational infrastructure}\\
+Especially for medium or large scale genetic studies, researchers should ensure appropiate computational resources are available to them or can be built before the data collection is completed. Often times researchers focus mainly on the aspect of data collection as it is typically the most time consuming and expensive step of any research project. However, researchers should also think about where and how this data will be stored, whether it will need extensive cleaning, where and how it will be analyzed, who will analyze it and how much computational power and time is needed to accomplish the study. With the emergence of cloud services, obtaining a cloud subscription has become an easy step. However, such subscription by itself accomplishes nothing as system administrators and/or software engineers are needed to setup the optimal cloud environment for planned analyses. Therefore, these resources should be investigated and a computational plan should be put forward prior to acquiring data.
+
+\item \textbf{Reproducible programming}\\
+Regardless of the number of variants included in the study, conducting genetic association studies require many statistcal tests to check for data quality, understand population characteristics, dissect the association signal and understand the variant association while adjusting for other potentially relevant variables. Therefore, conducting these analyses with a statistical programming language such as R or Python coupled with a version control program such as Git is highly suggested to ensure reproducibility. Frequent documentation that can be coupled with such open source languages using simple documentation programs such as RMarkdown or Jupyter notebooks can be used as an analytic diary and ease communication within research group as well as collaborators. 
+\end{enumerate}
+
+
+We believe upon rigorous replication and construction risk models, our findings and future genetic studies of HSCT can open up new opportunities to improve survival outcomes after HSCT by:
+\begin{enumerate}
+\item \textbf{Improving donor selection} \\
+As the number of registered bone marrow transplant donors grow, a patient's likelihood to have multiple HLA-matched donors increase. In such cases non-HLA variants can be used to give preference to a certain donor to improve survival outcomes of the patient.
+\item \textbf{Determining high risk patients for a certain outcome} \\
+Patients or their matched donors who are carriers of certain variants that increase risk of GVHD, infection or relapse can be identified early on and receive appropriate prophylaxis or necessary measures can be taken to prevent expected outcome.
+\item \textbf{Determining patients that can benefit or detriment from conditioning intensities}
+Patients who are carriers of certain variants may be at higher risk dying from their disease when conditioned with reduced intensity prior to transplant and genotyping patients for certain variants can help in making decisions regarding conditioning intensity.
+\end{enumerate}
+
+Furthermore, complexity and toxicity of HSCT require a personalized approach in determining patients suitable for this high risk treatment. Therefore, clinicians practicing HSCT are familiar with the idea of using models to predict response and tailoring treatment strategies based on patient's fitness and disease status. Thus, incorporating non-HLA genetics in risk prediction could be much easier to accomplish in the context of HSCT compared to other fields of medicine or treatment applications.

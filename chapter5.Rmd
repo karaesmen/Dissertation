@@ -1,0 +1,616 @@
+---
+title: "chapter5"
+author: "Ezgi Karaesmen"
+date: "03/23/2020"
+output: pdf_document
+---
+
+```{r ch5_setup, include=FALSE}
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE, size="scriptsize", tidy=FALSE)
+```
+
+# Introduction
+
+Thanks to its adjudicated outcomes and rich clinical as well as genetic data, DISCOVeRY-BMT presents a unique opportunity to explore the contribution of recipient and donor genetics to HSCT outcomes. Therefore, many scientist working in the HSCT field are interested in replicating or validation their results in DISCOVeRY-BMT cohorts or would like to know if certain genetic or serum biomarkers are worth pursuing. While we are mindful about challenges that comes with testing for multiple hypotheses, we see conducting genome-wide analyses with DISCOVeRY-BMT and making these results available to collaborators as an important task and responsibility to further science. Furthermore, complexity of understanding the HSCT outcomes require an in depth dissection of any associations found genome wide and compare such associations with other clinical outcomes to understand the driving cause of the association. Therefore, we have conducted multiple GWAS with DISCOVeRY-BMT and while we do not report genome-wide results for each outcome, we would like to have these summary statistics from these analyses at hand and easily accessible for the reasons discussed above. 
+
+With DICOVeRY-BMT study, it possible to conduct at least different 168 genome-wide analyses for: 3 genomes (recipient, donor and mismatch), 4 disease groups (AML\+MDS\+ALL, AML\+MDS, AML, ALL), 7 survival outcomes (overall survival (OS), disease related motality (DRM), progression free survival (PFS), transplant related mortality (TRM), death due to organ failure (ORGF), infection (INF) and graft versus host disease (GVHD)) and 2 different censoring times (100 days and 1 year after transplant). Each result file generated after a genome-wide analysis is a tab separated text file, has a size of ~1.5 gigabytes (GB) and contains ~9 million rows (SNPs) and 42 columns. Columns provide information on the SNP; summary statistics from cohort 1, 2 and meta analyses; heterogeneity of the meta analyses, sample sizes as well as number of events. While computation of these results have been automated by an analytic pipeline developed in our group, accessing and subsetting them in an efficient and reproducible way has been a challenging task. Typically exploration of these results have been achieved by importing the result file into R environment, subsetting the data for a region of interest and generating plots with summary statistics. However, importing files over 1 GB size into R environment typically takes time and importing multiple large files require memory intensive resources, which can be challenging to achieve for interactive analyses on a regular basis. Furthermore, organization and proper storage of the files can be difficult when the number result files are growing and require well defined nomenclature and folder structure to build pipelines that can take such files as input. Ultimately, we would like to build web applications that allow our collaborators who are unfamiliar with statistical programming practices to access and visualize DISCOVeRY-BMT with simplified user interfaces. Such web applications also require well constructed databases for efficiency and seamless integration. To overcome these challenges and improve our efficiency while communicating our results with our collaborators, we built a database on a cloud environment with DISCOVeRY-BMT results. This chapter gives details on the construction of the database and explains its structure in further detail.
+
+## Computational Resources
+
+We used the University at Buffalo (UB) Computational Center for Research (CCR) academic computing cluster for all of our genome-wide analyses (https://www.buffalo.edu/ccr/support/research_facilities/general_compute.html). DISCOVeRY-BMT results database was built on UB's research cloud, named "Lake Effect". Lake Effect is a subscription-based Infrastructure as a Service (IAAS) cloud that provides root level access to virtual servers and storage on demand. Lake Effect is 100\% compatible with Amazon's Web Services (AWS) and allows users to go between the two services (https://ubccr.freshdesk.com/support/solutions/articles/5000680722). 
+
+
+## PostgreSQL
+
+PostgreSQL is a free and open-source object-relational database management system that is based on and extends the SQL language (https://www.postgresql.org/about/). PostgreSQL is derived from the POSTGRES package written at the University of California at Berkeley, which began in 1986 and became operational in 1987 [@postgres]. PostgreSQL remains to be the most used open-source database system with its wide community support and extensive documentation. Thanks to its continuous development for over two decades it has become one of the most robust and reliable database systems. Flexibility of PostgreSQL also allows easy integration with server-side languages including R. For these reasons, we decided to use the PostgreSQL system to construct our database.
+
+# DISCOVeRY-BMT Results Database
+
+## Database structure 
+
+In order to reduce repetitive data entries and efficiently normalize the database, DISCOVeRY-BMT Results Database (D-BMT DB) has been structured to have three main tables: `snp`, `outcome` and `results`. Schema of the D-BMT DB is shown in Figure \ref{fig:dbstructure}.
+
+`snp` table contains information on each SNP, including a unique primary key `snp_id`, rsID (`rsid`), chromosome (`chr`), chromosome position of the SNP based on reference genome hg37 (`pos`), reference (`ref`) and alternative (`alt`) alleles, whether the snp was typed or imputed (`typed`), imputation info score (`info`), reference cohort (`public_maf`) and DISCOVeRY-BMT MAF (`dbmt_maf`). 
+
+`outcome` table consists of the unique primary key `outcome_id`, which genome (recipient, donor or mismatch) analyses were conducted with (`genome`), survival outcome (`outcome`) that was tested, censoring time (`censor_time`) used for the analysis, disease groups included in the analysis (`disease_grp`), ethnicity of the patient population (`ethnicity`), sample size in cohort 1 (`n_c1`) and cohort 2 (`n_c2`), number of events for cohort 1 (`n_c1`) and cohort 2 (`n_c2`) as well as the ambiguous patient subset (`pt_subset`) column defining any specific subset of patients that cannot be specified by only `disease_grp` or `ethnicity` columns. 
+
+`results` is a long table containing all necessary summary statistics from both DISCOVeRY-BMT cohorts (`*_c1` & `*_c2`) and meta analyses (`*_m`) of all GWAS results. It includes columns for two primary keys `snp_id` and `outcome_id`, coefficients (`coef_c1`, `coef_c2`, `coef_m`), standard error of coefficients (`se_coef_c1`, `se_coef_c2`, `se_coef_m`) and negative log~10~ p-values  (`p_value_c1_nlog10`, `p_value_c2_nlog10`, `p_value_m_nlog10`) of the SNP covariate in the survival model. Other columns include details of the meta analysis conducted with METAL software such as heterogeneity I^2^ (`hetisq`) and p-value (`hetpval`) and the alternative allele used by `METAL` software (`alt_metal`). We preferred using negative log~10~ p-values over non-transformed p-values for two reasons: (1) exploration of a chromosomal region typically requires such transformed p-values for plotting; (2) reduce storage size by requireing less decimal digit precision. Hazard ratios as well as lower and upper confidence interval columns were also removed to reduce number of columns as these can be easily generated with coefficients and standard errors.
+
+Finally, we are working on adding the `annotation` table that will provide summary statistics from whole blood eQTL analyses obtained from eQTLGen Consortium [@Vosa_2018], gene whose expression is impacted by the variant and the consequence of the variant as predicted by Variant Effect Predictor (VEP) Tool (https://useast.ensembl.org/info/genome/variation/prediction/predicted_data.html)  
+
+
+\begin{figure}[!]
+\centering
+\includegraphics[width=\linewidth, height=5in]{figures/chapter5/db_structure.png}
+\caption[Schema of DISCOVeRY\-BMT Database Structure]{Schema of DISCOVeRY\-BMT Database Structure. Three main tables of the database snp, outcome and results as well as the annotation table that will be added in the near future are shown. Relation of the tables are defined with unique primary keys (PK) \texttt{snp\_id} and \texttt{outcome\_id}.}
+    \label{fig:dbstructure}
+\end{figure}
+
+
+Above mentioned tables are connected with primary keys (PK) `snp_id` and `outcome_id`. User is expected to query the database by subsetting `snp` and `outcome` tables for the region and outcomes of interest respectively, then by joining these tables with `results` table by `snp_id` and `outcome_id`, creating the final table with SNP, outcome information and summary statistics. Therefore, creating appropriate PKs is crucial for the accuracy of the database and should be designed accordingly to ensure uniqueness and database efficiency. Both `snp_id` and `outcome_id` were generated by hashing a unique string with MD5 algorithm, producing a 128-bit hash value. Hashed values take less space than conventional character values, improve query efficiency and provide increased database security. 
+
+`snp_id` string is generated for each SNP that was available after imputation using chromosome number (CHR), chromosomal position (POS), rsID (RSID), reference (REF) and alternative (ALT) alleles and a boolean indicating if the SNP was typed (TRUE for typed and FALSE for imputed SNPs) separated with underscore. For SNPs with missing rsIDs, `RSID` field was simply replaced with `[CHR]:[POS]_[REF]/[ALT]` (e.g. 10:118527881_C/T) format. This string is then converted to hashed values. An example of the string structure and conversion is given below:    
+\
+
+
+```
+Generalized snp_id string: 
+[CHR]_[POS]_[RSID]_[REF]_[ALT]_[TYPED(boolean)]
+
+Example string to hashed value conversion:
+10_98087_rs11252127_C_T_TRUE → d09b510c59dfa1dc3ac4a0fd0da794b8
+```
+
+\pagebreak
+
+`outcome_id` string is generated for each GWAS conducted with DISCOVeRY-BMT cohorts by genome (GENOME), disease group included in analysis (DISEASE_GRP), outcome tested (OUTCOME), time of censoring (CENSOR_TIME), ethnicity of patient population tested (ETHNICITY) and a specific patient subset (PT_SUBSET) separated with underscore. This string is then converted to hashed values. An example of the string  structure and conversion is given below:        
+\   
+
+```
+Generalized outcome_id string:
+[GENOME]_[DISEASE_GRP]_[OUTCOME]_[CENSOR_TIME]_[ETHNICITY]_[PT_SUBSET]
+
+Example string to hashed value conversion:
+D_AMLMDS_DRM_1y_EA_NA → 544a6fd013eb6d0cdb30b621ca066dca
+```
+\   
+
+All tables were created with SQL commands. These commands and details of the data types and restrictions assigned to each table column are shown below:    
+
+
+\noindent `snp` table creation:
+
+```{sql, echo=TRUE, eval=FALSE}
+create table snp (
+  snp_id UUID NOT NULL PRIMARY KEY,
+	RSID VARCHAR(50) NOT NULL,
+	CHR	SMALLINT NOT NULL,
+	POS INTEGER NOT NULL,
+  REF CHAR(1),
+  ALT CHAR(1),
+  TYPED BOOLEAN,
+	INFO REAL,
+	public_MAF REAL,
+	DBMT_MAF REAL
+);
+```
+\  
+\pagebreak    
+
+
+\noindent`outcome` table creation:
+
+```{sql, echo=TRUE, eval=FALSE}
+create table outcome (
+  outcome_id UUID NOT NULL PRIMARY KEY,
+  genome VARCHAR(2) NOT NULL,
+  outcome	VARCHAR(10) NOT NULL,
+  censor_time VARCHAR(10) NOT NULL,
+  disease_grp VARCHAR(15) NOT NULL,
+  pt_subset VARCHAR(50),
+  ethnicity VARCHAR(5) NOT NULL,
+  N_c1 SMALLINT,
+  N_c2 SMALLINT,
+  Nevent_c1 SMALLINT,
+  Nevent_c2 SMALLINT
+);
+```
+\    
+
+\noindent `results` table creation: 
+
+```{sql, echo=TRUE, eval=FALSE}
+create table results (
+	PRIMARY KEY (snp_id, outcome_id),
+	snp_id UUID REFERENCES snp (snp_id),
+	outcome_id UUID REFERENCES outcome (outcome_id),
+	alt_metal CHAR(1),
+  coef_c1 REAL,
+  coef_c2 REAL,
+  coef_m REAL,
+  se_coef_c1 REAL,
+  se_coef_c2 REAL,
+  se_coef_m REAL,
+  pvalue_c1_nlog10 REAL,
+  pvalue_c2_nlog10 REAL,
+  pvalue_m_nlog10 REAL,
+  samp_freq_alt_c1 REAL,
+  samp_freq_alt_c2 REAL,
+  hetisq REAL,
+  hetpval REAL);
+```
+
+\
+
+Because `snp_id` and `outcome_id` PKs are references for the `results` table, `snp` and `outcome` tables are inserted to the D-BMT results DB first, followed by `results` table insertion. Furthermore, extensive data wrangling was required to generate PKs and achieve appropriate data format for database insertion. Workflow of data wrangling and database insertion details are discussed in the next section.
+
+
+## Workflow of Database Insertion
+
+All GWAS results were generated and stored on UB CCR. As D-BMT results DB was built on Lake Effect cloud (will be referred as cloud), these data had to be transferred to the cloud prior to database insertion. Furthermore, all files had to be reformatted to match database structure. To minimize virtual CPU usage on the cloud side, all memory intensive data formatting was completed on the CCR side, followed by file transfer via secure shell (SSH) protocol [@ylonen2006secure]. Schema of the workflow is shown in Figure \ref{fig:db_wflow}.
+
+\begin{figure}[!]
+\centering
+\includegraphics[width=\linewidth]{figures/chapter5/db_flow.png}
+\caption[Schema of DISCOVeRY\-BMT Database Creation Workflow]{Schema of DISCOVeRY\-BMT Database Creation Workflow. Input files and scripts for each processing step are shown in rectangular and hexagonal boxes. All R scripts used are marked with R logo and blue borders.}
+    \label{fig:db_wflow}
+\end{figure}
+
+
+### `snp` Table Workflow
+
+After imputation two files are generated giving all necessary information on the typed and imputed SNPs: `Sanger_HRC_allChr_final.txt` and `Sanger_HRC_chrX_final.txt` contain information regarding all SNPs located on chrosomomes 1 to 22 and on chrosome X respectively. Both of these files were used to create the `snp` table of D-BMT resutls DB as well as the `snp_id` PK. `Sanger_HRC_allChr_final.txt` is a large file with 2.4 GB size, which consists of 39,131,579 rows (SNPs). Both of these files were processed with R script `snp_tbl_split.R` using the Simple Linux Utility for Resource Management (SLURM) scheduling and providing appropriate memory requirements for the process. `snp_tbl_split.R` generates two files `split_snp_tbl_1to22chr.tsv` and `split_snp_tbl_Xchr.tsv` with necessary formating for cleaning and `snp_id` generation. During the cleaning step we realized that 743,635 were missing rsIDs. Therefore, these missing rsIDs were queried from dbSNP database via files obtained from  ftp://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/. Two files providing missing rsIDs were generated after the query: `missingsnpRsidDict_cleaned_1to22chr.txt` and `missingsnpRsidDict_cleaned_Xchr.txt`. All four files `split_snp_tbl_1to22chr.tsv`, `split_snp_tbl_Xchr.tsv`, `missingsnpRsidDict_cleaned_1to22chr.txt` and `missingsnpRsidDict_cleaned_Xchr.txt` were processed to generate `clean_snp_tbl_1to22chr.tsv` and `clean_snp_tbl_Xchr.tsv`, which contain the `snp_id` string ready to be hashed and all columns appropriately formatted for database insertion. These cleaned and formatted files `clean_snp_tbl_1to22chr.tsv` and `clean_snp_tbl_Xchr.tsv` were transferred to cloud location `data/DBMT_results_database/snp_tbl/` using `scp` command. Finally both files were processed one last time with `insert_snp_tbl.R` R script where the hashing step using `openssl::md5` function and database insertion steps are completed. All R scripts used for this process are shown in detail in section 5.3.1.
+
+### `outcome` Table Workflow
+
+`outcome` table wrangling, hashing and insertion were all completed on the cloud using `insert_outcome_tbl.R` script. This script imports `DBMT_PhenoData_EA_long_allVar_20190223.txt` and `mismatch_phenotype_wide_100d_20190223.txt` files, which contain all phenotype information for GWAS analyses. Details of this R script is shown in section 5.3.2.    
+
+### `result` Table Workflow
+
+Result files containing all summary information from GWAS analyses are generated \underline{per chromosome} with the analytic pipeline set up in our group. Directory structure of these files are typically based on disease groups. In other words, a directory created for an entire "AML\+MDS" disease group will include files for multiple outcomes (e.g. OS, TRM, DRM, PFS etc.) tested for 22 chromosomes. Therefore two scripts were generated to take this directory path as input: (1) `result_tbl_process_transfer.R` script processes each result file on the CCR side and transfers to cloud (2) `result_tbl_process_transfer_sjob.sh` parallelizes this process via SLURM by submitting chromosome files to multiple available nodes simultaneously on CCR and produces log and error files to ensure the reproducibility of the process.
+As such user can simply modify the `result_tbl_process_transfer_sjob.sh` to process and transfer files for the directory of interest. On the cloud side a similar directory is created that contains the processed result files. These files then processed for a final time, PKs `snp_id` and `outcome_id` are hashed and inserted in the D-BMT results DB with `insert_result_tbl.R`. This R script was written to work with batch execution of R and can be executed with a simple terminal command by providing three paths: (1) the cloud directory containing result files to be inserted, (2) R script and (3) file name for insertion log file. 
+\newline 
+
+\noindent Generalized terminal command for execution:
+```{sh, eval=FALSE, tidy=TRUE}
+R CMD BATCH '--args results="[DIRECTORY NAME CONTAINING FILES TO BE INSERTED]"' 
+[PATH TO RSCRIPT] [PATH TO LOG FILE] & 
+```
+
+\noindent Example execution:
+```{sh, eval=FALSE}
+R CMD BATCH '--args results="AMLonly_1y_EA"' 
+/data/DBMT_results_database/code/insert_result_tbl.R
+/data/DBMT_results_database/results_tbl/insert_out/AMLonly_1y_EA.out &
+```
+
+
+# R scripts used for data wrangling and database insertion
+
+R packages used in scripts include tidyverse [@tidyverse], vroom [@vroom], glue (https://github.com/tidyverse/glue), odbc [@odbc], DBI [@DBI], openssl [@openssl], batch [@batch] and data.table [@data.table].
+
+## R Scripts used for `snp` Table Processing 
+
+\noindent `snp_tbl_split.R`
+\newline
+
+\noindent Working directory on CCR:   
+```
+/projects/rpci/lsuchest/lsuchest/Rserve/BMT/genetic_data/PLINK2VCF/Sanger_HRC/
+```
+
+```{r, echo=TRUE, eval=FALSE}
+library(data.table, 
+        lib.loc="/user/ezgikara/R/x86_64-pc-linux-gnu-library/3.5")
+library(tidyverse)
+
+all_chr <- "Sanger_HRC_allChr_final.txt"
+x_chr <- "Sanger_HRC_chrX_final.txt"
+
+### CHR 1-22 ####
+snp_tbl <- fread(all_chr)
+separate(snp_tbl[1:5,], name, 
+         c("chr", "pos", "rsid", "ref", "alt"), 
+         sep = "_", remove = FALSE) %>%
+  colnames(.) %>%
+  matrix(data=., nrow = 1) -> save_cols
+
+write.table(save_cols, 
+            "DBprep/split_snp_tbl_1to22chr.tsv", 
+            sep="\t", row.names = FALSE, 
+            quote = FALSE, col.names = FALSE)
+write.table(save_cols, "DBprep/missing_snps_1to22chr.tsv", 
+            sep="\t", row.names = FALSE, 
+            quote = FALSE, col.names = FALSE)
+
+
+for(chr in 1:22){
+  chr_rows <- grep(glue::glue("^{chr}_[0-9]"), snp_tbl$name)
+  chr_snp <- separate(snp_tbl[chr_rows], name, 
+                      c("chr", "pos", "rsid", "ref", "alt"), 
+                      sep = "_",remove = FALSE)
+  miss_snp <- chr_snp[rsid == "."]
+  
+  write_tsv(chr_snp, "DBprep/split_snp_tbl_1to22chr.tsv", append = TRUE)
+  message(glue::glue("saved CHR{chr}"))
+  write_tsv(miss_snp, "DBprep/missing_snps_1to22chr.tsv", append = TRUE)
+  message(glue::glue("saved CHR{chr} missing snps"))
+}
+
+### CHR X ####
+
+xchr_snp_tbl <- fread(x_chr) %>%
+  rename(INFO=INFP)
+xchr_snp <- separate(xchr_snp_tbl, name, 
+                     c("chr", "pos", "rsid", "ref", "alt"), 
+                     sep = "_",remove = FALSE)
+xmiss_snp <- xchr_snp[rsid == "."]
+
+
+write_tsv(xchr_snp, "split_snp_tbl_Xchr.tsv")
+message("Saved X chr")
+write_tsv(xmiss_snp, "missing_snps_Xchr.tsv")
+message("Saved X chr missing snps")
+```
+
+\newpage
+
+\noindent `snp_tbl_fix_missing_rsIDs.R`
+\newline
+
+\noindent Working directory on CCR:      
+```
+/projects/rpci/lsuchest/lsuchest/Rserve/BMT/genetic_data/PLINK2VCF/Sanger_HRC/
+DBprep
+```
+
+```{r, echo=TRUE, eval=FALSE}
+library(tidyverse)
+options(tibble.width=Inf)
+
+### CHR 1-22 ####
+
+chr1_22 <- vroom::vroom("split_snp_tbl_1to22chr.tsv")
+message("CHR1-22 data loaded. \n")
+
+miss_chr1_22 <- vroom::vroom("missingsnpRsidDict_cleaned_1to22chr.txt", 
+                             n_max = 10000) %>%
+  select(-INFO, -allele) %>%
+  rename(INFO=info,
+         name0 = name) %>%
+  mutate(name = glue::glue("{chr}_{pos}_{chr}:{pos}_{ref}/{alt}_{ref}_{alt}"))
+message("Missing CHR1-22 data loaded. \n")
+
+
+norsid_snps <- chr1_22 %>%
+  filter(!(name %in% miss_chr1_22$name0) & rsid == ".") %>%
+  mutate(name = glue::glue("{chr}_{pos}_{chr}:{pos}_{ref}/{alt}_{ref}_{alt}"),
+         rsid = glue::glue("{chr}:{pos}_{ref}/{alt}"))
+  
+clean_snptbl <- chr1_22 %>%
+  filter(!name %in% miss_chr1_22$name0 & rsid != ".") %>%
+  bind_rows(select(miss_chr1_22,-name0)) %>%
+  bind_rows(norsid_snps) %>%
+  arrange(chr, pos) %>%
+  mutate(typed = ifelse(typed == "TYPED", T, F)) %>%
+  unite(snp_str, name, typed, sep = "_", remove = FALSE) %>%
+  select(-name)
+
+write_tsv(clean_snptbl, "clean_snp_tbl_1to22chr.tsv")
+message("Saved clean table. \n")
+
+
+### CHR X ####
+
+chrX <- vroom::vroom("split_snp_tbl_Xchr.tsv")
+cat("CHR X data loaded. \n")
+
+miss_chrX <- vroom::vroom("missingsnpRsidDict_cleaned_Xchr.txt") 
+
+miss_chrX %>%
+  select(-INFO, -allele) %>%
+  rename(INFO=info,
+         name0 = name) %>%
+  mutate(name = glue::glue("{chr}_{pos}_{chr}:{pos}_{ref}/{alt}_{ref}_{alt}"))
+cat("Missing CHR X data loaded. \n")
+
+norsid_snps <- chrX %>%
+  filter(!name %in% miss_chrX$name0 & rsid == ".") %>%
+  mutate(name = glue::glue("{chr}_{pos}_{chr}:{pos}_{ref}/{alt}_{ref}_{alt}"))
+
+chrX_snps <- chrX %>%
+  filter(!name %in% miss_chrX$name0 & rsid != ".") %>%
+  bind_rows(select(miss_chrX, -name0)) %>%
+  bind_rows(norsid_snps) %>%
+  arrange(pos) %>%
+  mutate(typed = ifelse(typed == "TYPED", T, F)) %>%
+  unite(snp_str, name, typed, sep = "_", remove = FALSE) %>%
+  select(-name)
+
+write_tsv(chrX_snps, "clean_snp_tbl_Xchr.tsv")
+message(glue::glue("saved CHRX"))
+```
+
+\noindent `insert_snp_tbl.R`
+
+\noindent Working directory on Lake Effect Cloud:      
+```
+/data/DBMT_results_database
+```
+
+```{r, echo=TRUE, eval=FALSE}
+library(odbc)
+library(DBI)
+
+con <- DBI::dbConnect(odbc::odbc(),
+                      driver = "PostgreSQL Unicode",
+                      database = "dbmt_results",
+                      UID    = "postgres",
+                      PWD    = "password",
+                      host = "localhost",
+                      port = 5432)
+dbListTables(con)
+
+
+snp_tbl <- vroom::vroom("snp_tbl/clean_snp_tbl_1to22chr.tsv")
+snp_tbl <- dplyr::select(
+  snp_tbl,
+  snp_str,
+  rsid,
+  chr,
+  pos,
+  ref,
+  alt,
+  typed,
+  info = INFO,
+  public_maf = publicMAF,
+  dbmt_maf = BMT_MAF
+)
+
+
+for( i in sort(unique(snp_tbl$chr)) ){
+  snp_tbl_chr <- snp_tbl[snp_tbl$chr == i,]
+  snp_tbl_chr$snp_id <- openssl::md5(snp_tbl_chr$snp_str)
+  snp_tbl_chr$snp_str <- NULL
+  odbc::dbWriteTable(con, "snp", snp_tbl_chr, append=TRUE)
+  print(paste("Inserted CHR", i ))
+}
+```
+
+## R Scripts used for `outcome` Table Processing
+
+\noindent `insert_outcome_tbl.R`
+
+\noindent Working directory on Lake Effect Cloud:      
+
+```
+/data/DBMT_results_database
+```
+
+```{r}
+library(tidyverse)
+pheno_rd <- vroom::vroom("DBMT_PhenoData_EA_long_allVar_20190223.txt")
+pheno_mm <- vroom::vroom("mismatch_phenotype_wide_100d_20190223.txt") %>%
+  drop_na(sample_type) %>%
+  mutate(sample_type = "MM")
+
+pheno_rd %>%
+  bind_rows(pheno_mm) %>%
+  select(sample_type, 
+         cohort,
+         disease,
+         contains("_1Y"),
+         contains("_100d"),
+         -contains("S_1Y"),
+         -intxsurv_1Y, -intxrel_1Y, -other_1Y,
+         lfs_1Y) -> outcm_tbl0
+
+outcm_tbl1 <- outcm_tbl0 %>%
+  mutate(disease = "mixed")
+
+outcm_tbl2 <- outcm_tbl0 %>%
+  filter(disease %in% c("AML", "MDS")) %>%
+  mutate(disease = "AMLMDS")
+
+outcm_tbl0 %>%
+  bind_rows(outcm_tbl1, 
+            outcm_tbl2) -> outcm_tbl0
+
+outcm_tbl <- 
+  outcm_tbl0 %>%
+  group_by(sample_type,
+           cohort,
+           disease) %>%
+  summarise(n = n(), 
+            OS_1y = sum(dead_1Y),
+            TRM_1y = sum(TRM_1Y),
+            DRM_1y = sum(disease_death_1Y),
+            PFS_1y = sum(lfs_1Y),
+            ORGF_1y = sum(OF_1Y),
+            GVHD_1y = sum(GVHD_death_1Y),
+            INF_1y = sum(infection_1Y),
+            OS_100d = sum(dead_100d),
+            DRM_100d = sum(drm_100d),
+            TRM_100d = sum(trm_100d),
+            PFS_100d = sum(lfs_100d),
+            GVHD_100d = sum(gvhd_100d),
+            INF_100d = sum(inf_100d),
+            ORGF_100d = sum(of_100d)) %>%
+  ungroup()  %>%
+  gather(key=outcome, value=nevent, -(sample_type:n)) %>%
+  gather("key", "value", n, nevent) %>%
+  mutate(cohort= paste0("c", cohort)) %>%
+  unite(key, key, cohort) %>%
+  spread(key, value) %>%
+  separate(outcome, c("outcome", "censor_time")) %>%
+  mutate(genome = recode(sample_type,
+                         donor="D",
+                         recipient="R")) %>%
+  mutate(ethnicity = "EA",
+         pt_subset = as.character(NA)) %>%
+  select(genome, outcome, disease_grp=disease, everything(), -sample_type) 
+
+
+head(outcm_tbl) 
+
+outcm_tbl %>%
+  unite(outcome_str, 
+        genome, disease_grp, outcome, censor_time,ethnicity, pt_subset,
+        remove = FALSE) %>%
+  mutate(outcome_id = openssl::md5(outcome_str)) %>%
+  select(-outcome_str) -> outcm_tbl
+
+
+
+require(DBI)
+require(odbc)
+
+con <- DBI::dbConnect(odbc::odbc(),
+                      driver = "PostgreSQL Unicode",
+                      database = "dbmt_results",
+                      UID    = "postgres",
+                      PWD    = "password",
+                      host = "localhost",
+                      port = 5432)
+dbListTables(con)
+dbWriteTable(con, "outcome", outcm_tbl, append=TRUE)
+```
+
+## R Scripts used for `result` Table Processing
+
+\noindent `result_tbl_process_transfer.R`
+
+\noindent Working directory on CCR:   
+```
+/projects/rpci/lsuchest/lsuchest/DBMT_results/
+```
+
+```{r}
+library(tidyverse)
+library(vroom)
+library(batch)
+batch::parseCommandArgs(evaluate=TRUE)
+
+
+message("path_in:", path_in)
+message("path_out: ", path_out)
+message("patt: ", patt)
+
+res_file <- dir(path_in, glue::glue("^{patt}"), full.names = TRUE)
+
+# string manipulation for file names and outcome_str
+patt %>%
+  str_split(., "_") %>% .[[1]] -> outcm_splt
+
+save_file_as <- paste(
+  outcm_splt[2],
+  outcm_splt[3],
+  outcm_splt[4],
+  "1y",
+  "EA",
+  "NA",
+  ifelse(
+    as.numeric(outcm_splt[1]) < 10,
+    paste0("CHR0", outcm_splt[1], ".res"),
+    paste0("CHR", outcm_splt[1], ".res")
+  ),
+  sep = "_"
+)
+
+
+message("Output will be saved as ", save_file_as)
+
+
+# load file
+chr_res <- vroom::vroom(
+  res_file,
+  col_select = list(
+    CHR,
+    POS,
+    RSID,
+    REF = REF.O,
+    ALT = ALT.O,
+    TYPED,
+    ALT_METAL = ALT,
+    contains("COEF"),
+    contains("PVALUE"),
+    SAMP_FREQ_ALT_c1,
+    SAMP_FREQ_ALT_c2,
+    HetISq,
+    HetPVal
+  ),
+  progress = FALSE
+)
+message("Result file loaded.")
+
+
+# modify and save
+chr_res %>%
+  mutate_at(vars(matches("PVALUE*")), list(nlog10 = ~ log10(.) * -1)) %>%
+  mutate(POS = as.integer(POS)) %>%
+  unite(snp_str, CHR:TYPED) %>%
+  select(-matches("PVALUE_*"),
+         ends_with("nlog10")) %>% 
+  write_tsv(path = paste(path_out, save_file_as, sep="/"))
+message(save_file_as, "______saved")
+
+
+system(glue::glue("scp {path_out}/{save_file_as} ezgikara@199.109.192.37:{cloud_path}"))
+message("File transfer complete.")
+```
+
+
+\noindent `result_tbl_process_transfer_sjob.sh`
+
+\noindent Working directory on CCR:   
+```
+/projects/rpci/lsuchest/lsuchest/DBMT_results/
+```
+
+```{sh}
+#!/bin/bash
+FILEDIR=/DBMT_AMLMDS/analyses/AMLMDS_EA_results/out;
+
+FILES=$(ls $FILEDIR);
+FILES=${FILES//.res/};
+
+for patt in ${FILES[@]};
+do
+
+cat <<EOM > ${patt}.sh
+#!/bin/bash
+#SBATCH --time=01:00:00
+#SBATCH --nodes=1
+#SBATCH --mem=32000
+#SBATCH --mail-type=END
+#SBATCH --partition=general-compute --qos=general-compute
+#SBATCH --job-name=${patt}
+#SBATCH --output=/DBprep/log/%j_${patt}.out
+#SBATCH --error=/DBprep/log/%j_${patt}.err
+
+DBPREP=/projects/rpci/lsuchest/lsuchest/DBMT_results/DBprep
+CLOUD_PATH=/data/DBMT_results_database/results_tbl/AMLMDS_1y_EA/
+
+module load R/3.4.1
+
+R --file=\$DBPREP/code/result_tbl_process_transfer.R -q --args patt ${patt} path_in
+$FILEDIR path_out \$DBPREP/out cloud_path \$CLOUD_PATH
+
+exit
+EOM
+
+echo -e "\tsubmitting file: ${patt}\n";
+sbatch ${patt}.sh;
+
+done
+```
+
+# Discussion
+
+We developed the DISCOVeRY-BMT Results Database for GWAS results generated in our group. This has improved the efficiancy of querying these results and visualization for data exploration as well as collaboration in R environment. Querying from a PostgreSQL database is made especially easy using database R packages available DBI, odbc as well as dbplyr [@dbplyr]. Creation of the database also greatly improved reproducibility thanks to specific restrictions setup in the database and eased data backup processes. We believe that databases should be considered in any research setting that requires large file processing and exploration.

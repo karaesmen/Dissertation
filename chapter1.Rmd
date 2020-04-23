@@ -1,0 +1,326 @@
+---
+title: "introduction"
+author: "Ezgi Karaesmen"
+date: "`r Sys.time()`"
+output:
+  pdf_document: default
+  word_document: default
+---
+
+```{r ch1_setup, include=FALSE}
+## This saves you from having to do this for every chunk
+knitr::opts_chunk$set(fig.path = 'figures/chapter1/',
+                      echo = FALSE, 
+                      warning = FALSE, 
+                      message = FALSE,
+                      cache=FALSE,
+                      eval=TRUE)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+```
+
+The overarching goal of this dissertation is to measure germline genetic associations with survival in patients with acute myeloid leukemia (AML), acute lymphoblastic leukemia (ALL), or myelodysplastic syndrome (MDS) who received matched unrelated donor (MUD) hematopoietic stem cell transplantation (HSCT) as curative therapy. This dissertation also includes computational approaches to improve rigor and reproducibility, as well as to facilitate clinical collaboration.
+
+Chapter 1 provides information on the significance, background and study design for the analyses presented herein. Chapter 2 is a literature review of the joint and independent genetic associations with survival following transplant published on or before 30 December 2016, where we aimed to replicate or validate the previous findings in our cohorts. These findings have been published in *Blood*[@Karaesmen_2017]. Chapter 3 focuses on donor germline genetic variants associated with death due to infection or graft versus host disease (GVHD) respectively. These results have been published in *Blood Advances* [@Karaesmen_2019]. Chapter 4 describes the genome-wide interaction study (GWIS) conducted to understand the role of germline genetics in survival outcomes among two main groups of conditioning regimens given prior to transplant. Chapter 5 provides details on the construction of the genome-wide association results database for the DISCOVeRY-BMT study. Finally, Chapter 6 provides a review of the dissertation chapters and discusses future directions. 
+
+# Hematopoietic Malignancies
+
+## Background on Hematopoietic Malignancies
+
+All cellular components in blood are derived from hematopoietic stem cells (HSCs) and in healthy individuals new blood cells are produced on a daily basis. This continuous self-renewing and maturation process from hematopoietic stem cells to differentiated cells is called hematopoiesis [@copelan_2006]. A diagram of the hematopoietic maturation and the tissues involved in this process is shown in Figure \ref{fig:hematopoiesis}. Hematopoiesis begins with HSCs located in center of the bone marrow and first differentiate into either lymphoid or myeloid progenitor cells, giving rise to two main lineages of blood cells. Myeloid progenitor cells further develop into lineages that eventually become erythrocytes, platelets, neutrophils, monocyte or macrophages, eosinophils and basophils. Lymphoid progenitors eventually develop into Natural killer cells, T-lymphocytes and B-lymphocytes. These fully differentiated blood cells lose proliferative abilities and play a vital role in the function of the immune system, sustaining the health of the human body on a daily basis. 
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth, height=5in]{figures/chapter1/hematopoiesis.png}
+  \caption[Diagram of hematopoietic maturation process]{\textbf{Diagram of hematopoietic maturation process.} The tissue where the process takes place and level of cell maturity are shown on left and right panels respectively. By Mikael Häggström, used with permission.}
+  \label{fig:hematopoiesis}
+\end{figure}
+
+
+Hematologic malignancies originate from either of the myeloid or lymphoid progenitor cells of these myeloid and lymphiod stem cells, which is an important determinant of disease type. Leukemias are a major group of hematologic malignancies that originate in the bone marrow, giving rise to high number of malignant immature white blood cells called blasts. Typically these blasts are generated from a rare clonal leukemic stem cell population located in the bone marrow. While leukemias are divided in to many subgroups two major classifications are made based on the rapidity of the leukemic process: acute leukemias characterized by the rapid and massive accumulation of blasts in bone marrow and blood, whereas chronic leukemias characterized by the excessive buildup of relatively mature, but still abnormal, white blood cells, taking much longer periods of time to progress. In both types of leukemia malignant cells cannot perform their normal biological function and become a huge burden on the bone marrow function. This eventually interferes with the production of healthy and functioning blood cells as well as platelets, resulting in anemia and ultimately immune failure. Hence acute leukemias require immediate treatment, but chronic leukemias can be monitored for some time to ensure maximum effectiveness of the treatment. Another important determinant of the leukemia type is the hematologic lineage of the leukemia cells: leukemias originating from the myeloid and lymphoid lineages are called myeloid (myelogenous) leukemias and lymphoblastic (lymphocytic) leukemias respectively. Four main types of leukemias based on these classifications are summarized in Table \ref{tab:leuk_types}.
+
+```{r, out.width="60%"}
+tibble::tribble(
+    ~`Cell Lineage`, ~Acute, ~Chronic,
+    "Lymphoid", "Acute lymphoblastic leukemia\n(ALL)", "Chronic lymphocytic leukemia\n(CLL)",
+    "Myeloid", "Acute myeloid leukemia\n(AML)", "Chronic myeloid leukemia\n(CML)"
+) %>% kable(format = "latex",
+          caption="\\label{tab:leuk_types} Four main leukemia classifications", 
+          booktabs=TRUE,
+           align = 'c') %>%
+    column_spec(width="6em", column=1) %>%
+    column_spec(width="12em", column=2) %>%
+    column_spec(width="14em", column=3)
+
+```
+
+
+Another prevalent blood cancer that originate from the myeloid stem cells is called myelodysplastic syndrome (MDS). MDS is caused by hematopoietic stem cells that do not mature normally. This abnormal maturation process leads to an increase in number of blasts and abnormally developed blood cells, called dysplastic cells. 
+
+ALL, AML and MDS are among the deadliest and most difficult to treat blood cancers and are the most common indications for allogeneic transplants accounting for 75% of allogeneic HSCTs [@cibmtr_slides]. We will focus on these three diseases and further discuss their significance and existing treatment strategies.
+
+## Acute Lymphoblastic Leukemia
+
+In the US, over 6,000 cases of Acute Lymphoblastic Leukemia (ALL) are diagnosed annually and about 80% of these cases are seen in children or adolescents. ALL is the most commonly diagnosed pediatric cancer and has the highest cancer mortality rate for those under 20 years old. Fortunately, advances made in the treatment of pediatric ALL has been very successful. The 5-year survival rate of children diagnosed with ALL soared from less than 10% to 90% in the last 50 years [@Hunger_2015]. However, survival rates among adults and elderly remains to be low, with 5-year relative survival rates 30% to 40% respectively [@Paul_2016]. Survival disparity among age groups has been attributed to higher-risk disease, comorbidities and development of chemotherapy resistance after relapse [@Paul_2016]. 
+
+For many ALL cases the cause remains unknown. While some cases can be attributed to rare genetic syndromes such as Down syndrome, Klinefelter syndrome and others, these make less than 5% of cases [@Paul_2016]. A recent publication also reported common genetic variants associated with B-lymphoblastic leukemia [@Clay_Gilmour_2017]. Other risk factors include exposure to radiation or prior chemotherapy and age (older than 70 years) [@Paul_2016]. 
+
+Presence of 20% or more lymphoblasts in the bone marrow are required for ALL diagnosis. ALL is classified into B-lymphoblastic (B-ALL) and T-lymphoblastic categories (T-ALL), based on the combined cytogenetic and immunophenotypic characteristics of the blasts [@Paul_2016]. B-cell ALL comprises approximately 90% of cases in children and 75% in adults while T-cell ALL comprises the remaining cases [@Paul_2016]. Furthermore, cytogenetic and genetic aberrations are major prognostic factors, with poor prognostic genetic markers occurring more frequently in adults [@Paul_2016]. 
+
+ALL treatment is determined based on disease subtypes and requires a complete immunophenotypic, cytogenetic, and molecular panel for stratification. For most cases chemotherapy remains to be the first line of treatment. Targeted therapy such as rituximab, a monoclonal antibody targeting CD20 are also used along side chemotherapy for certain B-ALL subtypes [@Paul_2016]. A recent major development in treatment of B-cell malignancies has been the Chimeric antigen receptor (CAR)-engineered T cells (CAR-T cells). This novel approach involves engineering patient's T-cells with gene transfer technology to express CAR, allowing them to target specific cell surface proteins, eventually killing cells that express these target proteins. Especially treatment with anti-CD19 CAR-T cells for B-ALL has been highly successful, resulting in 90% complete remission rate [@Wang_2017]. However, tumor antigen escape remains to be a major barrier for an actual cure. Leukemic stem cells either stop expressing proteins targeted by CAR-T cells or due to selective pressure leukemic stem cells that do not express the target protein become prevalent, eventually escaping apoptosis by CAR-T cells. Furthermore, CAR-T cell activity towards healthy HSCs cause side effects and other toxicities, making CAR-T cell therapy a less reliable treatment option. Research to produce newer generation CAR-T cells that can tackle both of these issues are still underway [@Wang_2017]. Consequently, CAR-T cell therapy has great potential to be used as induction therapy and achieving complete remission for subsequent HSCT. As for patients with poor prognosis and standard-risk patients with evidence of minimal residual disease after induction therapy, allogeneic HSCT remains to be the only potentially curative therapy [@Paul_2016].
+
+## Acute Myeloid Leukemia
+
+In the United States, estimated new cases of Acute Myeloid Leukemia (AML) were 20,830 and over 10,000 patients died from this disease in 2015 [@Siegel_2015]. Median age at diagnosis is 63 years and incidence of AML increases with age. Among adults, Acute Myeloid Leukemia is the most common acute leukemia, accounting for approximately 80% of the cases but is rare in children [@Yamamoto_2007]. AML is cured in 35-40% of adult patients who are 60 years of age or younger and in 5-15% of patients who are older than 60 years of age. Survival in older patients who are unfit to receive intensive chemotherapy is typically 5 to 10 months. [@Dohner_2015] The 2016 World Health Organization's (WHO) criterion for AML is at least 20% myeloblasts in marrow (or blood) with myeloid lineage established by multiparameter flow cytometry [@Estey_2018].
+
+Several risk factors for AML include having myelodysplastic syndrome (MDS) or other myeloproliferative neoplasms, exposure to chemotherapy and radiation. Furthermore, hereditary risk includes Down Syndrome and inactivating mutations in \textit{GATA2} [@Crispino_2017].   
+
+As mentioned previously, AML develops from myeloid stem cells and this leukemic transformation can occur at different stages of the hematopoietic process. Therefore, AML is a highly diverse and heterogeneous disease with many subtypes that can have significantly different prognosis. As of 2016, World Health Organization (WHO) defines seven main subtypes that are categorized based on recurrent cytogenetic and chromosomal abnormalities and other clinically relevant factors for prognosis [@Arber_2016]:
+
+1. \textbf{AML with recurrent genetic abnormalities:} This category includes diseases with recurrent chromosomal translocations and inversions as well as mutations in \textit{NPM1} and \textit{CEBPA} genes. 
+
+2. \textbf{AML with myelodysplasia-related changes:} This category includes patients with previous MDS diagnosis or other myeloproliferative neoplasms that eventually transforms into AML or those who have similar cytogenetic abnormalities to such patients. Typically, this category includes elderly patients and has worse prognosis. Some common cytogenetic signatures include complex karyotype, deletions in chromosomes 7, 5, 13, 11, 9, unbalanced aberrations in other chromosomes and specific chromosomal translocations.
+
+3. \textbf{Therapy-related myeloid neoplasms:} This category is also referred as treatment related AML and involves patients who receive prior chemotherapy and/or radiation for another primary malignancy and develop AML afterward. This subgroup is typically associated with poor prognosis.
+
+4. \textbf{Myeloid sarcoma:} This rare manifestation of AML involves solid collection of leukemic cells occurring outside of the bone marrow.
+
+5. \textbf{Myeloid proliferations related to Down syndrome:} Involves AML cases associated with Down syndrome.
+
+6. \textbf{AML, not otherwise specified:} Other AML subtypes that do not fall into categories above.
+
+Furthermore, three risk groups have been recommended by the European LeukemiaNet (ELN) for diagnosis and management of AML based on cytogenetics as shown in Table \ref{tab:aml_risk_grps} [@D_hner_2017].
+
+
+\begin{table}[]
+\caption{AML prognostic groups by cytogenetics as recommended by ELN.}
+\label{tab:aml_risk_grps}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}ll@{}}
+\toprule
+Risk category                 & Genetic abnormality                                          \\ \midrule
+\multirow{4}{*}{Favorable}    & t(8;21)(q22;q22.1); RUNX1-RUNX1T1                            \\
+                              & inv(16)(p13.1q22) or t(16;16)(p13.1;q22); CBFB-MYH11         \\
+                              & Mutated NPM1 without FLT3-ITD or with FLT3-ITDlow            \\
+                              & Biallelic mutated CEBPA                                      \\ \midrule
+\multirow{4}{*}{Intermediate} & Mutated NPM1 and FLT3-ITDhigh                                \\
+ & Wild-type NPM1 without FLT3-ITD or with FLT3-ITDlow (without adverse-risk genetic lesions) \\
+                              & t(9;11)(p21.3;q23.3); MLLT3-KMT2A                            \\
+ & Cytogenetic abnormalities not classified as favorable or adverse                           \\ \midrule
+\multirow{10}{*}{Adverse}     & t(6;9)(p23;q34.1); DEK-NUP214                                \\
+                              & t(v;11q23.3); KMT2A rearranged                               \\
+                              & t(9;22)(q34.1;q11.2); BCR-ABL1                               \\
+                              & inv(3)(q21.3q26.2) or t(3;3)(q21.3;q26.2); GATA2,MECOM(EVI1) \\
+                              & −5 or del(5q); −7; −17/abn(17p)                              \\
+                              & Complex karyotype,  monosomal karyotype                      \\
+                              & Wild-type NPM1 and FLT3-ITDhigh                              \\
+                              & Mutated RUNX1                                                \\
+                              & Mutated ASXL1                                                \\
+                              & Mutated TP53                                                 \\ \bottomrule
+\end{tabular}%
+}
+\end{table}
+
+
+
+Treatment for AML is decided based on the subtypes discussed above, cytogenetic abnormalities as well as other clinical factors such as patient age and existing comorbidities. Typical induction therapy for patients that are physically fit consists of high doses of chemotherapy including anthracycline, idarubicin, cytarabine. For those who are older or unfit, dose adjustment is required and hypomethylating agents such as azacitidine are included in the regimen to reduce the tumor burden. Allogeneic HSCT is considered for patients with high risk of relapse that are young or fit enough to receive it. Indications for allogeneic HSCT include being 65 or younger, achieving first complete remission, having high-risk clinical features, having persisting minimal residual disease, primary induction failure, second of higher complete remission [@Dohner_2015]. Many other emerging therapies are also under investigation for AML treatment and including agents that are epigenetic modifiers, tyrosine kinase inhibitors, antibody-based therapies and other agents [@Stein_2016]. However, even with the development of such therapies, relapse remains to be a major contributor to AML related death for high risk patients, especially due to acquired resistance from initial therapy. Thus, allogeneic HSCT remains to be the only curative therapy for high risk patients [@Cornelissen_2016].
+
+## Myelodysplastic syndrome
+
+Myelodysplastic syndrome (MDS) is a group of cancers that originate in the bone marrow due to ineffective hematopoiesis, manifested by morphologic dysplasia in hematopoietic cells and by reduction in number of mature blood cells in peripheral blood, referred as cytopenia [@Arber_2016]. Among North American adults older than 65 years, MDS is a common cause of unexplained anemia [@Wells_2016]. Risk factors for MDS include prior chemotherapy or radiation exposure, existing genetic syndromes such Down syndrome, older age, obesity and smoking; however, most cases remain idiopathic. At 31%, overall 5-year survival remains poor, with considerable risk of progression to acute myeloid leukemia [@ZEIDAN20191]. MDS diagnostic criteria and classification have been constantly evolving in last several decades, posing a challenge to report on MDS epidemiology. Only after 2001, MDS was recognized as a neoplasm and became reportable to The Surveillance, Epidemiology, and End Results (SEER) program which collects cancer incidence and survival data in the US. In 2015, 4 new cases per 100,000 were reported in the US. MDS incidence increases by age, with 86.4% of patients being diagnosed at age 60 years or older [@ZEIDAN20191]. 
+
+MDS remains one of the most challenging blood cancers to diagnose and classify, mainly due to heterogeneous nature of the disease. Especially for cases with low blast percentage or where definitive morphological abnormalities are absent MDS diagnosis have been difficult [@Vardiman_2009]. Determination of myeloblast percentage by examination of bone marrow and peripheral blood biopsies remains critical in determining MDS subtypes recommended by WHO. However, with recent revisions to WHO classification of myeloid neoplasms, recurring chromosomal abnormalities are now considered as presumptive evidence of MDS even when such phenotypic features are not present [@Arber_2016; @Vardiman_2009]. Furthermore, while presence of anemia and/or cytopenias have been essential for any MDS diagnosis, these have only minor impact on most WHO MDS classifications. Other features taken into consideration for classification include dysplasia in muliple lineages, presence or absence of ring sideroblasts or Auer rods [@Vardiman_2009]. 
+
+Despite recent developments in diagnosis and classification of MDS, determining appropriate treatment strategies remains to be a challenge. Majority of MDS patients die of disease-related causes, specifically 47% from AML, 27% from infection, and 10% from bleeding complications [@ZEIDAN20191]. Treatment for MDS can involve combination of chemotherapy, radiation therapy, targeted therapy and allogeneic HSCT. Even with development of novel MDS-specific treatments, only the hypomethylating agent azacitidine and allogeneic HSCT have shown to be beneficial for survival, especially for high-risk patients [@ZEIDAN20191].
+
+
+# Hematopoietic stem cell transplantation
+
+## Public burden and Significance
+
+HSCT remains to be the only potentially curative treatment for patients with advanced blood malignancies [@Wall_2017]. HSCT trends have been continuously increasing especially for aggressive blood malignancies such as AML, MDS and ALL  as shown in Figure \ref{fig:trends_by_disease} [@DSouza_2017]. AML, ALL and MDS are the most common disease groups to receive allogeneic transplants, accounting for 75% of allogeneic HSCTs in the US in 2018 [@Majhail_2019].
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter1/cibmtr_trends_disease.png}
+    \caption[Allogeneic transplant trends in the United States]{Allogeneic transplant trends in the United States. Total number of allogeneic transplants in the US by year and disease groups: Acute Myeloid Leukemia (AML), Acute Lymphoblastic Leukemia (ALL), Myelodysplastic Syndrome (MDS),  Non-Hodgkins or Hodgkins lymphoma (NHL-HL), Chronic Myeloid Leukemia (CML), Multiple Myeloma (MM), Chronic Lymphoblastic Leukemia (CLL). (D'Souza A, Fretham C. Current Uses and Outcomes of Hematopoietic Cell Transplantation (HCT): CIBMTR Summary Slides, 2019)}
+    \label{fig:trends_by_disease}
+\end{figure}
+
+This upward trend can be attributed to significant improvements in transplant care, donor matching thanks to advances in molecular HLA-typing and the growing number bone marrow donors. However, HSCT remains to be a high-risk procedure, where 3-year survival probability of AML patients after unrelated donor HSCT were 53%, 50%, and 27% for patients with early, intermediate, and advanced disease respectively (Figure \ref{fig:trends_by_dstat}). It is important to note that the significant drop in survival rates occur especially within the first year after receiving HSCT as shown in Figure \ref{fig:trends_by_dstat}. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter1/cibmtr_trends_dstat.png}
+    \caption[Survival after unrelated donor HSCT among patients diagnosed with AML]{Survival after unrelated donor HSCT among patients diagnosed with AML. Probabilities of 5-year survival among AML patients who received unrelated donor HSCT between 2007 and 2017 by disease status. (D'Souza A, Fretham C. Current Uses and Outcomes of Hematopoietic Cell Transplantation (HCT): CIBMTR Summary Slides, 2019)}
+    \label{fig:trends_by_dstat}
+\end{figure}
+
+Transplant-related causes of death, such as infection, organ failure and graft versus host disease remain a large contributor to post-HSCT mortality. Among patients who receive unrelated donor allogeneic HSCT, mortality related to infection, organ failure and graft versus host disease account for 66% and 41% of the deaths within 100 days and beyond 100 days to 3 years respectively. While deaths related to primary disease make up only 21% of the total deaths within 100 days, the rate climbs up to 51% beyond 100 days (D'Souza A, Fretham C. Current Uses and Outcomes of Hematopoietic Cell Transplantation (HCT): CIBMTR Summary Slides, 2019). These trends show the difficulty of achieving a successful balance between the two competing causes of death, namely transplant related mortality (TRM) and disease related mortality (DRM). Importantly, high rates of TRM deters oncologists or patients from pursuing HSCT, even when it is the only available curative therapy. 
+
+In order to improve outcomes and make HSCT accessible to a wider patient population, it is crucial to understand the risk factors that contribute to the causes of post-transplant mortality. Given the complexity of the procedure, clinicians employ a variety of factors including patient age, performance status, comorbidities, type of cancer, remission status, and degree of HLA-mismatch, to select HSCT-eligible patients, to assign conditioning regimen and intensity and to predict risk of transplant-related mortality (TRM). Despite consideration of such factors, survival rates upon transplant remains low, as discussed above. Exploring recipient and donor genetics as risk factors for HSCT outcomes can therefore expand our understanding and open up new opportunities for therapeutic targets. Ultimately, our ability to identify these polymorphisms in recipients and donors prior to transplantation may lead to: better recipient-donor pairing and better survival outcomes, identification of patients susceptible to poor or early adverse outcomes, generation of preliminary data for future mechanistic and genetic studies to understand the biology of transplant-related mortality or other clinical outcomes, and novel therapies to minimize post-HSCT mortality. 
+
+## Background
+
+HSCT is a medical procedure, where the hematopoietic progenitor stem cells (also frequently called the graft) are transplanted to reestablish the function of the compromised bone marrow [@Soutar_1995]. HSCT procedure involves complete or partial ablation of the patient bone marrow by administering conditioning regimens. Patient then receives healthy hematopoietic progenitor stem cells (HSCs) via intravenous infusion. HSCs then mobilize to the bone marrow, eventually establishing the healthy bone marrow function. 
+
+\noindent There are four main components of the HSCT procedure that determines the type of transplant a patient receives: 
+
+\noindent \textbf{1. Graft Type}      
+Graft types are split into three groups: autologous, syngeneic or allogeneic. Autologous HSCT consists of patient's own HSCs that are collected from the patient, stored and given back to the patient after anti-cancer treatment. It is used to replace stem cells that have been damaged by high doses of chemotherapy, required to treat the patient’s underlying disease. In syngeneic HSCT donor is an identical twin, hence no genetic differences are present between the graft and the patient. In allogeneic HSCT, HSCs are collected from a donor who is genetically different than the patient. Usually a sibling that satisfies a certain match criteria is preferred for this type of transplant. However, only approximately 30% of patients who may benefit from HSCT have such a donor available  [@Pasquini_2013]. If a sibling is not available, graft is collected from a HLA-matched unrelated donor (MUD). Especially for older patients, finding an available HLA-matched sibling can be very challenging as donor age is regarded as an important risk factor and younger donors are preferred [@Seo_2015]. 
+
+\noindent \textbf{2. Graft Source}     
+The graft can be obtained from three main sources: bone marrow, peripheral blood stem cells or umbilical cord blood. Bone marrow (BM) transplants require collection of HSCs from the center of the posterior iliac crest (pelvis) using a large needle while the donor is under general anesthesia [@copelan_2006]. Another commonly used graft source is the peripheral blood stem cells (PBSCs), where donor HSCs are mobilized with granulocyte colony-stimulating factor (G-CSF) and collected with leukapheresis. PBSC-HSCT has quickly became the preferred type of allogeneic transplant for its practicality and reduced invasivess to the donor. Disadvantages of PBSC-HSCT compared to BM-HSCT are multiday collections, inability to collect adequate grafts and slightly increased risk of difficult-to-treat GvHD [@Tuthill_2010; @Holtick_2014]. Umbilical cord blood (UCB) has become a preferred graft source for allogeneic transplant especially for ethnic minorities that cannot receive HSCT due to lack of suitable donors. UCB is drived from fetal cord blood that is collected immediately after the cord is clamped and cut. Fetal cord blood is then further processed to separate placenta and collect UCB cells. UCB-HSCT has great advantages such as safe and easy collection, lower risk of viral transmission and less differentiated stem cells, which reduces the risk of GVHD. However, it contains fewer number of cells and therefore delays hematological recovery, increases of infection and early post-transplant mortality [@Tuthill_2010]. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter1/cibmtr_trends_graft.png}
+    \caption[Transplant rates by graft type, source and patient age.]{Transplant rates by graft type, source and patient age. Transplant percentages shown between 2013 and 2018 for graft type, source and patient age. Abbreviations: URD-BM/PB, unrelated donor bone marrow or peripheral blood; URD-CB, unrelated donor umbilical cord blood (D'Souza A, Fretham C. Current Uses and Outcomes of Hematopoietic Cell Transplantation (HCT): CIBMTR Summary Slides, 2019)}
+    \label{fig:graft_rates}
+\end{figure}
+
+Transplant rates of graft source and type are shown by recipient age in Figure \ref{fig:graft_rates}. Among all patient groups, most common graft source and type are BM or PBSC URD transplants, followed by HLA-identical siblings. UCB-HSCT is more common among pediatric cases compared to other age groups as requirement for the number of stem cells are lower due to lower body weight.   
+
+\noindent \textbf{3. HLA matching}     
+Currently, patients are matched with their donors at human leukocyte antigen (HLA) region, a gene complex on chromosome 6. HLA genes encode for the major histocompatibility complex (MHC) proteins, which are essential part of the acquired immune system and play a major role in determining immune identity, allowing immune cells to recognize foreign molecules. HLA complex consists of six loci: HLA-A, HLA-B, HLA-C, HLA-DRB1, HLA-DQB1, and HLA-DPB1. Alleles of these loci act in a co-dominant manner and are highly polymorphic. Therefore, while there are 6 loci that can potentially be matched, where 12/12 match would be the perfect match, due to high allele diversity it is very unlikely to find such a donor. Currently the US standard for donor selection is 8/8 match for the loci HLA-A, HLA-B, HLA-C, and HLA-DRB1, although many HSCT centers also consider 10/10 matches which also includes HLA-DQB1 loci [@F_rst_2019]. It has been well established that differences in HLA matching across loci, and not just number of matches, are a significant risk factor for mortality and development of GVHD [@Ayuk_2018]. 
+
+A recent study conducted in a large cohort of AML and MDS patients who received HLA-matched related donor (MRD), HLA-matched unrelated donor (MUD) or HLA-mismatched unrelated donor (MMUD) HSCT compared overall survival (OS) by donor type and HLA mismatch status [@Ayuk_2018]. Interestingly, OS at 3 years was comparable after transplants from MRDs and 10/10 MUDs. However, consistent with previous reports in literature, OS probability decreased with increasing number of HLA mismatches in MUD-HSCT to 45% for 9/10 MMUDs (P < .001), 35% for 8/10 MMUDs (P < .001), and 29% for <8/10 MMUDs (P < .006) [@Ayuk_2018].  Furthermore, locus specific effects on OS were further investigated among HLA mismatched patients. Probability of 3-year OS were significantly lower for single mismatches at loci HLA-A and -C but not for -B, -DRB1, or -DQB1 [@Ayuk_2018]. These results are shown in \ref{fig:hla_surv} [@Ayuk_2018].
+
+\begin{figure}[!]
+    \centering
+    \includegraphics[width=\linewidth, height=6.2in]{figures/chapter1/hla_survival}
+    \caption[Impact of HLA-mismatch on overall survival]{Impact of HLA-mismatch on overall survival. The Kaplan-Meier overall survival probabilities (a) for  HLA-matched related donor (MRD), HLA-matched unrelated donor (MRD) and HLA-mismatched unrelated donor (MMRD) wih different levels of mismatch and (b) among MMRD by mismatched at different HLA loci. (Ayuk et al. 2018)}
+    \label{fig:hla_surv}
+\end{figure}
+
+\newpage
+
+\noindent \textbf{4. Pre-transplant conditioning regimens}    
+Conditioning regimens, which are given to the patient prior to transfusion of HSCs, can include one or multiple kinds of chemotherapy agents and total body irradiation. Conditioning regimens are given for two main reasons: (1) to reduce tumor burden and (2) to achieve sufficient immunoablation to prevent graft rejection [@Gyurkocza_2014]. Historically supralethal doses of total body irradiation (TBI) and chemotherapeutic agents have been used to achieve both of these goals, making HSCT a less viable option for patients with comorbidities due to high toxicities. Later graft versus tumor effect (GVT), immune reactions of donor cells against the leukemia cells, has been recognized as an important contributor to the effectiveness of HSCT. This led to the use of less conditioning regimens with lower intensity and therefore toxicity, allowing even older patients or those with comorbidities to receive HSCT. Currently, conditioning regimens are grouped in two categories depending on the regimen intensity: **myeloablative regimens**, high intensity regimens that aim for complete bone marrow ablation and **reduced intensity regimens**, lower intensity regimens with lower toxicity, that may not achieve complete bone marrow ablation. Reduced intensity regimens are now generally reserved for patients who are older, have co-morbid conditions or compromised organ function, and would otherwise be ineligible for a myeloablative high intensity regimen [@Gyurkocza_2014].
+
+As mentioned previously, conditioning regimens can include multiple chemotherapeutic agents with non-overlapping anti-leukemic activity or toxicities. Most commonly used chemotherapeutic agents in conditioning regimens include Busulfan (Bu), Cyclophosphamide (Cy), Fludarabine (Flu), Melphalan (Mel). Breakdown of these agents by conditioning regimen intensity is shown in Figure \ref{fig:regimen_bdown}   
+
+\begin{figure}[!]
+    \centering
+    \includegraphics[width=\linewidth, height=3in]{figures/chapter1/cibmtr_regimens.png}
+    \caption[Common conditioning regimens in AML or MDS allogeneic HSCT]{Common conditioning regimens in AML or MDS allogeneic HSCT in the US in 2008-2018. Abbreviations: Myeloablative conditioning (MAC), reduced intensity conditioning (RIC), Busulfan (Bu), Cyclophosphamide (Cy), Fludarabine (Flu), Melphalan (Mel), Total Body Irradiation (TBI). (D'Souza A, Fretham C. Current Uses and Outcomes of Hematopoietic Cell Transplantation (HCT): CIBMTR Summary Slides, 2019)}
+    \label{fig:regimen_bdown}
+\end{figure}
+
+
+The ability to predict which patients may tolerate a myeloablative high intensity regimen and which myeloablative regimen yields the most benefit, would allow for a tailored assignment of treatment and move us closer to the goal of improving post-HSCT outcomes. Conditioning regimens and their effect on survival will be discussed further in Chapter 4.
+
+
+
+## Hypothesis and Approach
+
+The transplantation of donor HSCs introduces a massive instability to the patient's lympho-hematopoietic system but, if successful, leads to the emergence of a completely new immune system that is genetically different from the patient's other tissues. Following the transplant, two competing immune reactions take place: host versus graft (HVG) and graft versus host (GVH) alloreactivity. Alloreactivity is defined as the ability of T-cells to recognize peptide–allogeneic-MHC complexes as "foreign", resulting in a cascade of immune reactions [@Felix_2007]. If not prevented, HVG alloreactivity can lead to graft rejection, which refers to immunologic destruction of transplanted HSCs. GVH alloreactivity on the other hand exerts the desirable GVT effect, hence helping fight the residual disease. However, GVH alloreactivity can also cause serious side effects, including GVHD, an immune condition that occurs when donor HSCs attack the recipient cells, which leads to increased risk of transplant related mortality. Discovery of histocompability and HLA typing has therefore been revolutionary in avoiding extreme HVG or GVH alloreactivity. However, alloreactivity is a complex process and even with HLA-matching, half of the patients die within the first year after transplant. Given the success of HSCT is highly dependent on activation and inhibition many complex immunological pathways, it is reasonable to consider more than 20,000 other non-HLA genes that have not been assessed for importance in survival following transplant. Therefore, it is plausible to think that non-HLA variants within or near these genes may play a role in post-HSCT survival [@Angaswamy_2013; @F_rst_2019]. Furthermore, non-HLA variants are shown to modify the availability and effectiveness of the chemotherapeutic agents, which may also contribute to HSCT mortality [@Gamazon_2010]. 
+
+Given the high mortality rate even upon HLA-matching, we hypothesize that \textbf{non-HLA patient or donor genetic variants may associate with patient survival following the transplant}. 
+
+Patient and donor genetic variation can be captured in multiple ways thanks to improvement in genotyping and sequencing technologies. Depending on the type of genetic data produced, it is possible to take various approaches to test the above mentioned hypothesis. Our multi-prong approach is outlined in \ref{fig:approach}. Considering historically published studies of non-HLA variants associated with HSCT outcomes, possible approaches for a large cohort study can be summarized in four groups:      
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth, height=5in]{figures/chapter1/approach.png}
+    \caption{Study schematic for analyses of genetic contribution to HSCT outcomes and computational tools required to conduct them.}
+    \label{fig:approach}
+\end{figure}
+
+
+1. \textbf{Candidate gene approach:} Focusing on the effect of genetic variation in genes with known mechanism. Historically, this has been the preferred approach to test non-HLA associations in the HSCT field. While it is a practical and economical approach, it also  bares many challanges such as bias stemming from the limited knowledge on a gene's function or a variant's impact at the time of study. This approach is dicussed further in Chapter 2.
+
+2. \textbf{Endophenotype approach:} Testing variants associated with an underlying trait (endophenotype) that is correlated with survival outcomes. While similar to a candidate gene approach, this approach relies less on the knowledge of potential gene function. The endophenotype approach requires that variants to be tested should associate with an endophenotype, such as serum or cell surface biomarkers, which are shown to predict the phenotype of interest, such as risk of mortality. This approach has been utilized to discover variants associated with GVHD or infection mortality and discussed in further detail in Chapter 3.
+
+3. \textbf{Exome-wide approach:} Testing associations with high impact, functional rare variants located in exomes. Since this approach investigates variants in all protein coding regions genome-wide, it is a less biased approach compared to candidate gene studies. However, an exome-wide study requires greater sample size and statistical power to detect true associations. This is because multiple test correction for large number of variants require much smaller p-values, but also due to low minor allele frequencies, it may not be possible to have adequate number of observations for a variant. Gene-based tests can increase the power to detect associations on a gene level in such cases. Gene-based tests determine the association of cumulative effects of variants in a gene with the phenotype of interest. Gene-level tests can be helpful in determining novel genes that may contribute to the phenotype of interest, help expand our understanding of the disease biology and identify novel therapeutic targets. While this approach has been utilized in our research group and has been published [@Zhu_2018], it will not be further dicussed in this dissertation.
+
+4. \textbf{Genome-wide approach:} Common variants across the genome are tested for association with phenotype of interest. This approach is called genome-wide association study (GWAS) and is a frequently utilized method to discover *de novo* loci associated with a trait, disease susceptibility or drug response. The most widely used marker to describe genetic variation in a GWAS setting is called a single nucleotide polymorphism (SNP). A SNP is defined as a genetic variant at a single base pair position (locus) in a DNA sequence that occurs in at least 1% of a population. GWAS strives to test for all SNPs across the genome, regardless of their function or location in a gene region. Therefore, GWAS is considered an agnostic approach, as the search for a causal SNP does not rely on the available knowledge at the time. Many GWAS have been successful in identifying variants associated disease susceptibility or drug response [@Visscher_2012]. GWAS also presents many challenges: (1) most common variants show low to moderate effects on common complex diseases; (2) multiple testing of millions of variants require a very stringent significance correction to determine true positive findings; (3) large sample sizes are needed to find strong associations that can pass such low p-value thresholds. However, even with such challenges, GWAS remains a more powerful method than the traditional linkage analysis for variant discovery [@Risch_1996]. Chapter 4 further discusses GWAS in the context of gene-environment interactions.
+
+To conduct large scale genomic analyses, powerful statistical software is needed to decrease computation time,  increase computational efficiency and improve reproducibility. We developed an R software package called `gwasurvivr` to conduct genome-wide survival associations using Cox proportional hazards model [@Rizvi_2018]. While this work has not been included as a chapter in this dissertation, `gwasurvivr` is used for all analyses described herein.
+
+In addition to analytic considerations, proper storage and fast query of summary statistics obtained from multiple GWAS is a necessity for downstream analyses, manuscript preparation and collaborations. However, this is a challenging task due to large file sizes. To overcome these challenges, ensure reproducibility and facilitate collaboration we constructed a PostgreSQL of all GWAS results so that our structured summary data can be properly queried. Further details of the database will be discussed in Chapter 5. 
+
+# DISCOVeRY-BMT Study
+
+To test our hypothesis while utilizing methods dicussed previously, we leveraged the existing GWAS called \underline{D}etermining the \underline{I}nfluence of \underline{S}usceptibility \underline{CO}nveying \underline{V}ariants \underline{R}elated to one-\underline{Y}ear mortality after \underline{B}one \underline{M}arrow \underline{T}ransplant (DISCOVeRY-BMT) study. This GWAS analyzes the association of recipient survival following an unrelated donor (URD) BMT with non-HLA genetic variation in recipient and donor genomes. DISCOVeRY-BMT study aims at identifying and characterizing non-human leukocyte antigen (HLA) genetic variation in the context of survival outcomes in acute lymphoblastic leukemia (ALL), acute myelogenous leukemia (AML) and myelodysplastic syndrome (MDS) patients and their matched unrelated donor (MUD) after hematopoietic stem cell transplantation (HSCT) [@lsc_2015]. 
+
+## Study Population
+
+Paired donor and recipient biospecimens and corresponding clinical data were obtained from the CIBMTR biorepository and database. Samples and clinical data was collected from 151 transplant centers across the US. All patients included in DISCOVeRY-BMT provided informed consent for inclusion in the Center for International Blood and Marrow Transplant Research (CIBMTR) registry. The National Marrow Donor Program (NMDP) and Roswell Park Cancer Institute Institutional Review Boards approved the study protocol. All patient and donor data has been de-identified prior to analyses.
+
+DISCOVeRY-BMT consists of two independent cohorts of patients with AML, ALL, or MDS. Cohort 1 included 2,609 10/10 HLA-matched URD- BMT recipients with AML, ALL or MDS from 2000-2008 and Cohort 2 included 923 10/10 HLA-matched URD-BMT recipients with AML, ALL or MDS from 2009-2011 as well as 8/8 (but not 10/10) HLA-matched URD-BMT recipients from 2000-2011. Patients were then excluded if they received T-cell depleted or cord blood grafts. Causes of death were adjudicated by an expert panel to overcome inconsistencies with reporting and classification of patient outcomes accros 151 centers. Primary cause of death was defined as Disease-Related Mortality (DRM) or Transplant-Related Mortality (TRM) [@Hahn_2015]. Further details of the study population are shown in Table \ref{tab:patient_char}.
+
+
+\begin{table}[]
+\caption[Patient characteristics of the DISCOVeRY-BMT Study]{Patient characteristics of the DISCOVeRY-BMT Study. Listed characteristics are selected based on relevant clinical factors for HSCT. KPS/LPS: Karnofsky/Lansky performance status of a recipient. The Karnofsky Scale is designed for recipients aged 16 years and older, and the Lansky Scale is designed for recipients less than 16 years old. Score ranges from 100 to 0, where 100 is ideal health and 0 is death.}
+\label{tab:patient_char}
+\scalebox{0.9}{
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Category} &
+  \multicolumn{1}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Recipient\\ Characteristics\end{tabular}}} &
+  \multicolumn{1}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}First Cohort \\ N=2106 n (\%)\end{tabular}}} &
+  \multicolumn{1}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Second Cohort\\ N=777 n (\%)\end{tabular}}} \\ \midrule
+\multicolumn{1}{l|}{\textbf{Age, years}}           & \multicolumn{1}{l|}{\textgreater{}=40} & \multicolumn{1}{l|}{795 (38)}   & 252 (32)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{\textless{}40}     & \multicolumn{1}{l|}{1311 (62)}  & 525 (68)   \\ \midrule
+\multicolumn{1}{l|}{\textbf{Donor Age,}}           & \multicolumn{1}{l|}{}                  & \multicolumn{1}{l|}{}           &            \\
+\multicolumn{1}{l|}{\textbf{years range (mean)}}   & \multicolumn{1}{l|}{}                  & \multicolumn{1}{l|}{18-61 (34)} & 18-60 (32) \\ \midrule
+\multicolumn{1}{l|}{\textbf{Sex}}                  & \multicolumn{1}{l|}{Male}              & \multicolumn{1}{l|}{1187 (56)}  & 429 (55)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Female}            & \multicolumn{1}{l|}{919 (44)}   & 348 (45)   \\ \midrule
+\multicolumn{1}{l|}{\textbf{Donor sex}}            & \multicolumn{1}{l|}{Male}              & \multicolumn{1}{l|}{1434 (68)}  & 563 (72)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Female}            & \multicolumn{1}{l|}{672 (32)}   & 214 (28)   \\ \midrule
+\multicolumn{1}{l|}{\textbf{Disease}}              & \multicolumn{1}{l|}{AML}               & \multicolumn{1}{l|}{1281 (61)}  & 488 (63)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{ALL}               & \multicolumn{1}{l|}{481 (23)}   & 94 (12)    \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{MDS}               & \multicolumn{1}{l|}{344 (16)}   & 195 (25)   \\ \midrule
+\multicolumn{1}{l|}{\textbf{AML Disease Status}}   & \multicolumn{1}{l|}{Early}             & \multicolumn{1}{l|}{587 (46)}   & 271 (56)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Intermediate}      & \multicolumn{1}{l|}{321 (25)}   & 101 (21)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Advanced}          & \multicolumn{1}{l|}{373 (29)}   & 116 (24)   \\ \midrule
+\multicolumn{1}{l|}{\textbf{ALL Disease Status}}   & \multicolumn{1}{l|}{Early}             & \multicolumn{1}{l|}{187 (39)}   & 47 (50)    \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Intermediate}      & \multicolumn{1}{l|}{206 (43)}   & 26 (28)    \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Advanced}          & \multicolumn{1}{l|}{88 (18)}    & 21 (22)    \\ \midrule
+\multicolumn{1}{l|}{\textbf{MDS Disease Status}}   & \multicolumn{1}{l|}{Early}             & \multicolumn{1}{l|}{229 (67)}   & 68 (35)    \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Advanced}          & \multicolumn{1}{l|}{115 (33)}   & 128 (65)   \\ \midrule
+\multicolumn{1}{l|}{\textbf{KPS/LPS}}              & \multicolumn{1}{l|}{90-100}            & \multicolumn{1}{l|}{1279 (61)}  & 490 (63)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{\textless{}90}     & \multicolumn{1}{l|}{618 (29)}   & 248 (32)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Missing}           & \multicolumn{1}{l|}{209 (10)}   & 39 (5)     \\ \midrule
+\multicolumn{1}{l|}{\textbf{Year of HSCT}}          & \multicolumn{1}{l|}{2000-02}           & \multicolumn{1}{l|}{351 (17)}   & 30 (4)     \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{2003-05}           & \multicolumn{1}{l|}{756 (36)}   & 67 (9)     \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{2006-08}           & \multicolumn{1}{l|}{999 (47)}   & 100 (13)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{2009-11}           & \multicolumn{1}{l|}{0 (0)}      & 580 (75)   \\ \midrule
+\multicolumn{1}{l|}{\textbf{BMI}}                  & \multicolumn{1}{l|}{Underweight}       & \multicolumn{1}{l|}{41 (2)}     & 20 (3)     \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Normal}            & \multicolumn{1}{l|}{778 (37)}   & 241 (31)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Overweight}        & \multicolumn{1}{l|}{657 (31)}   & 266 (34)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Obese}             & \multicolumn{1}{l|}{630 (30)}   & 250 (32)   \\ \midrule
+\multicolumn{1}{l|}{\textbf{Graft source}}         & \multicolumn{1}{l|}{Bone Marrow}       & \multicolumn{1}{l|}{744 (35)}   & 210 (27)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Peripheral Blood}  & \multicolumn{1}{l|}{1362 (65)}  & 567 (73)   \\ \midrule
+\multicolumn{1}{l|}{\textbf{Conditioning regimen}} & \multicolumn{1}{l|}{Myeloablative}     & \multicolumn{1}{l|}{1538 (73)}  & 552 (71)   \\
+\multicolumn{1}{l|}{\textbf{}}                     & \multicolumn{1}{l|}{Reduced Intensity} & \multicolumn{1}{l|}{568 (27)}   & 225 (29)   \\ \bottomrule
+\end{tabular}}
+\end{table}
+
+
+## Genotyping
+
+All samples were genotyped using the Illumina Human OmniExpress BeadChip and the Illumina HumanExome BeadChip (University of Southern California Genomics Facility). Samples were assigned to plates to ensure the even distribution of patient characteristics and potential confounding variables using Optimal Sample Assignment Tool (OSAT), an R/Bioconductor software package [@OSAT]. Quality assessment was done within each self-reported race group and included sample and SNP call rates, sample relatedness and sex. Samples that did not pass quality control were excluded. Typed SNPs were removed if the call rate was <98%, if there was deviation from Hardy-Weinberg equilibrium proportions [@laurie2010] or if discordance between duplicate samples was $>2\%$. Population outliers were removed using EIGENSTRAT [@Price_AL] ($n=73$). Additional sample quality control removed samples with missing call rate $\geq 2\%$ ($n=54$), sex mismatch ($n=9$), abnormal inbreeding coefficients (n=20), and evidence of cryptic relatedness ($n=17$), yielding 2107 and 777 donor-recipient pairs in cohorts 1 and 2, respectively. Over 94% of the samples were determined to have European ancestry, with remaining 6% consisting of African, Hispanic, Asian and other ethnic groups. To avoid any false positive signals caused by population stratification, this dissertation will focus solely on the European ancestry patients. 
+
+In addition to marginal effects of the donor and recipient, DISCOVeRY-BMT also tests the joint effect of recipient and donor genetic variation, which from now on throughout this dissertation will be referred to as recipient-donor mismatch ("R-D mismatch") or "mismatch genome". The mismatch genome is computed using the absolute value of the difference in the number of minor alleles between recipient and donor at each SNP. For example, the R-D mismatch value at a given SNP where the recipient is homozygous major (0 minor alleles) and the donor is heterozygous (1 minor allele) would be the absolute value of $|0-1|= 1$. 
+
+
+## Genetic Imputation
+
+Genetic imputation (will also be simply referred to as imputation) is the statistical process by which unobserved or missing genotypes are predicted based on the linkage disequilibrium structure of the genome and whole-genome sequencing data from population reference panels. Imputation has become a major component of many genetic associations studies for three reasons: (1) it inexpensively approximates whole-genome sequence data, boosting the number of SNPS that can be tested for association, increasing the power of the study, (2) it homogenizes SNP array data obtained from different platforms for meta-analyses, and (3) it allows fine mapping of a genetic region and thereby increases the chances of identifying a causal variant [@marchini_impute; @Das_2018]. 
+
+A wide array of computational options are available to impute genotypes from SNP arrays. IMPUTE4, Minimac3 and Beagle 5.0 and PBWT (Positional Burrows-Wheeler Transform) are the main open source imputation software packages [@Das_2018; @Durbin_2014]. However, using such software also requires high capacity computational resources such as computing clusters, necessary software installation and downloading large reference panel data sets. A simple solution to such technical challenges is using imputation servers. Imputation servers provide all the necessary computational as well as software resources and reference panel data. The user uploads the genotype data obtained from SNP arrays to a remote imputation server and simply downloads imputed genotype data once computation is complete using secure file transfer protocols. Currently, the University of Michigan and the Wellcome Sanger Institute offer such web imputation servers, using Minimac3 and PBWT algorithms respectively [@Das_2018]. 
+
+### Imputation with IMPUTE2
+At the time DISCOVeRY-BMT study was started, web imputation servers were not available. Therefore, donor and recipient genotypes were initially imputed with IMPUTE2 software on the high performance cluster of University at Buffalo's Center for Computational Research [@Howie_2009]. The 1000 Genomes Project Phase 3 reference panel was used for imputation. QCTOOL v1 (https://www.well.ox.ac.uk/~gav/qctool/) was used to remove imputed genotypes with info score $<0.7$, certainty $< 0.7$ and a minor allele frequency $<0.005$. The info score indicates the quality of imputation for a given genotype and ranges between 0-1, with higher values suggesting better quality. The recipient-donor mismatch genome dosage calculations, described above, were done as the absolute value of the recipient minus donor minor allele counts. These imputed and cleaned recipient and donor imputed genotypes were used to conduct analyses presented in Chapter 2.   
+
+
+### Imputation with Sanger Imputation Server
+
+The number of reference panels and samples sizes included in such reference panels have been increasing drastically over the years. A more diverse and larger reference panel increases the quality of the imputation and boosts the number of imputed genotypes. Therefore, DISCOVeRY-BMT genotypes have been imputed a second time with the Sanger Imputation Server using Haplotype Reference Consortium as reference panel [@hrc]. SHAPEIT2 was used for pre-phasing and PBWT algorithm was used for imputation [@shapeit2; @Durbin_2014]. Resutls discussed in chapters 3 to 5 were generated using this data set.
+
+# Conclusion
+In this chapter we discussed the significance and background of HSCT and laid the foundation for the primary hypothesis of this dissertation. Furthermore, we introduced approaches used to investigate our hypothesis and the DISCOVeRY-BMT study. The DISCOVeRY-BMT study is the first GWAS designed to test our hypothesis in a large cohort and data generated by the DISCOVeRY-BMT study has been used for all chapters of this dissertation. Therefore, this detailed introduction provides all the necessary information regarding the patient population, clinical variables and genotype data used in the remaining chapters.  
+
